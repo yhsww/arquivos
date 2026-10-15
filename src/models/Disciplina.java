@@ -8,25 +8,24 @@ public class Disciplina {
     private String nome;
     private List<Aluno> alunos;
 
-    public void setNome(String nome){
+    public void setNome(String nome) {
         this.nome = nome;
     }
 
-    public void setAlunos(List<Aluno> alunos){
+    public void setAlunos(List<Aluno> alunos) {
         this.alunos = alunos;
     }
 
-    public String getNome(){
+    public String getNome() {
         return this.nome;
     }
 
-    public List<Aluno> getAlunos(){
+    public List<Aluno> getAlunos() {
         return this.alunos;
     }
 
-    public Disciplina(String nome){
+    public Disciplina(String nome) {
         this.nome = nome;
         this.alunos = new ArrayList<>();
     }
-
 }
