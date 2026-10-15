@@ -1,3 +1,5 @@
+package src;
+
 import src.GeradorBoletim;
 import java.io.IOException;
 public class Main {
