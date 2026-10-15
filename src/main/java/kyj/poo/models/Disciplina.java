@@ -1,4 +1,4 @@
-package models;
+package kyj.poo.models;
 
 import java.util.ArrayList;
 import java.util.List;

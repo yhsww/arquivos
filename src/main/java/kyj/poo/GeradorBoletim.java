@@ -1,4 +1,4 @@
-package src;
+package kyj.poo;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -8,10 +8,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import models.Aluno;
-import models.Boletim;
-import models.Disciplina;
-import models.Nota;
+import kyj.poo.models.Aluno;
+import kyj.poo.models.Boletim;
+import kyj.poo.models.Disciplina;
+import kyj.poo.models.Nota;
 
 public class GeradorBoletim {
 

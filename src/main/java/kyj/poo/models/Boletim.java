@@ -1,9 +1,7 @@
-package models;
+package kyj.poo.models;
 
 import java.util.ArrayList;
 import java.util.List;
-import models.Aluno;
-import models.Nota;
 
 public class Boletim {
 

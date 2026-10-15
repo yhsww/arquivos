@@ -1,7 +1,4 @@
-package models;
-
-import models.Aluno;
-import models.Disciplina;
+package kyj.poo.models;
 
 public class Nota {
 

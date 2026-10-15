@@ -1,4 +1,4 @@
-package models;
+package kyj.poo.models;
 
 public class Aluno {
 

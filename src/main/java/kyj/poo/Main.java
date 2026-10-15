@@ -1,5 +1,6 @@
+package kyj.poo;
+
 import java.io.IOException;
-import src.GeradorBoletim;
 
 public class Main {
 
