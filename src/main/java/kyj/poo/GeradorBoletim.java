@@ -50,15 +50,17 @@ public class GeradorBoletim {
         bw.write("Aluno: " + nomeAluno + "\n");
         bw.newLine();
         for (Nota nota : boletim.getNotas()) {
+        	String disciplina_texto = "Disciplina: " + nota.getDisciplina().getNome();
+         	String nota_texto = String.format("Nota: %d\n", nota.getQtdAcertos());
             bw.write(
-                "Disciplina: " +
-                    nota.getDisciplina().getNome() +
-                    String.format(" - Nota: %.2f\n", (double) nota.getQtdAcertos())
+            	disciplina_texto +
+            	" ".repeat(40 - disciplina_texto.length() - nota_texto.length()) +
+             	nota_texto
             );
             bw.newLine();
         }
 
-        bw.write(String.format("Média geral: %.2f\n", boletim.calcularMedia()));
+        bw.write(String.format("Média geral: %.1f\n", boletim.calcularMedia()));
         bw.newLine();
 
         bw.write(
