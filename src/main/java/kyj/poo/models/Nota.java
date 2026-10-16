@@ -6,14 +6,14 @@ public class Nota {
     private Disciplina disciplina;
     private int qtdAcertos;
 
-    //calcular nota do zero
+    // calcular nota do zero
     public Nota(Aluno aluno, Disciplina disciplina, String gabarito) {
         this.aluno = aluno;
         this.disciplina = disciplina;
         this.qtdAcertos = calcularAcertos(aluno.getRespostas(), gabarito);
     }
 
-    //ler do arquivo
+    // ler do arquivo
     public Nota(Aluno aluno, Disciplina disciplina, int qtdAcertos) {
         this.aluno = aluno;
         this.disciplina = disciplina;

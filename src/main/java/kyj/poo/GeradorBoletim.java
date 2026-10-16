@@ -15,8 +15,8 @@ import kyj.poo.models.Nota;
 
 public class GeradorBoletim {
 
-    private File pathResultados; //leitura
-    private File pathBoletins; //escrita
+    private File pathResultados; // leitura
+    private File pathBoletins; // escrita
 
     public GeradorBoletim(String pathResultados, String pathBoletins) {
         this.pathResultados = new File(pathResultados);
@@ -41,7 +41,7 @@ public class GeradorBoletim {
 
         BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo));
 
-        bw.write("-----------------------");
+        bw.write("=".repeat(80));
         bw.newLine();
         bw.write("Boletim Geral do Aluno");
         bw.newLine();
@@ -51,14 +51,13 @@ public class GeradorBoletim {
             bw.write(
                 "Disciplina: " +
                     nota.getDisciplina().getNome() +
-                    " Nota: %.2f\n" +
-                    nota.getQtdAcertos()
+                    String.format(" - Nota: %.2f", (double) nota.getQtdAcertos())
             );
             bw.newLine();
         }
 
         bw.newLine();
-        bw.write(String.format("Média final: %.2f\n", boletim.calcularMedia()));
+        bw.write(String.format("Média final: %.2f", boletim.calcularMedia()));
         bw.newLine();
 
         bw.write(
@@ -67,7 +66,7 @@ public class GeradorBoletim {
                 : "Situação: reprovado(a)"
         );
         bw.newLine();
-        bw.write("-----------------------");
+        bw.write("=".repeat(80));
         bw.close();
     }
 
@@ -122,15 +121,15 @@ public class GeradorBoletim {
                     Aluno aluno = new Aluno(nomeAluno, "");
                     boletim = new Boletim(aluno);
                     boletins.add(boletim);
-
-                    Nota nota = new Nota(
-                        boletim.getAluno(),
-                        disciplina,
-                        acertos
-                    );
-
-                    boletim.addNotas(nota);
                 }
+
+                Nota nota = new Nota(
+                    boletim.getAluno(),
+                    disciplina,
+                    acertos
+                );
+
+                boletim.addNotas(nota);
             }
 
             br.close();
