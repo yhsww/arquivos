@@ -41,32 +41,34 @@ public class GeradorBoletim {
 
         BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo));
 
-        bw.write("=".repeat(80));
+        bw.write("=".repeat(40) + "\n");
         bw.newLine();
-        bw.write("Boletim Geral do Aluno");
+        bw.write("Boletim Geral do Aluno"  + "\n");
         bw.newLine();
-        bw.write("Nome: " + nomeAluno);
+        bw.write("=".repeat(40) + "\n");
+        bw.newLine();
+        bw.write("Aluno: " + nomeAluno + "\n");
         bw.newLine();
         for (Nota nota : boletim.getNotas()) {
             bw.write(
                 "Disciplina: " +
                     nota.getDisciplina().getNome() +
-                    String.format(" - Nota: %.2f", (double) nota.getQtdAcertos())
+                    String.format(" - Nota: %.2f\n", (double) nota.getQtdAcertos())
             );
             bw.newLine();
         }
 
-        bw.newLine();
-        bw.write(String.format("Média final: %.2f", boletim.calcularMedia()));
+        bw.write(String.format("Média geral: %.2f\n", boletim.calcularMedia()));
         bw.newLine();
 
         bw.write(
-            boletim.isAprovado()
-                ? "Situação: aprovado(a)"
-                : "Situação: reprovado(a)"
+        	"Situação final: " +
+            (boletim.isAprovado()
+                ? "APROVADO(A)"
+                : "REPROVADO(A)") + "\n"
         );
         bw.newLine();
-        bw.write("=".repeat(80));
+        bw.write("=".repeat(40));
         bw.close();
     }
 
