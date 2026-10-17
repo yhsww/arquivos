@@ -1,20 +1,18 @@
 package kyj.poo;
 
 import java.io.IOException;
+import javafx.application.Application;
+import javafx.stage.Stage;
+import kyj.poo.view.TelaPrincipal;
 
-public class Main {
+public class Main extends Application{
 
-    public static void main(String[] args) {
-        GeradorBoletim gerador = new GeradorBoletim(
-            "dados/resultados",
-            "dados/boletins"
-        );
+    public void start(Stage stage){
+        TelaPrincipal tela = new TelaPrincipal();
+        tela.mostrar(stage);
+    }
 
-        try {
-            gerador.gerarBoletins();
-            System.out.println("Boletins gerados com sucesso!");
-        } catch (IOException e) {
-            System.out.println("Erro: " + e.getMessage());
-        }
+    public static void main(String[] args){
+        launch(args);
     }
 }
