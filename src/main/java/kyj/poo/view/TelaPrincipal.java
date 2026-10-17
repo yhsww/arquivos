@@ -103,7 +103,7 @@ public class TelaPrincipal{
         nomeGerarBoletins.getStyleClass().add("acao-titulo");
 
         VBox gerarBoletim = new VBox(14, iconGerarBoletins, nomeGerarBoletins);
-        
+
         Button botaoGerar = new Button("Gerar");
         botaoGerar.getStyleClass().add("botao-principal");
         botaoGerar.setMaxWidth(Double.MAX_VALUE);
@@ -187,6 +187,7 @@ public class TelaPrincipal{
 
         Label tituloRodape = new Label("KYJ - Gerenciador de Boletins");
         tituloRodape.getStyleClass().add("menu-texto");
+        tituloRodape.setWrapText(true);
         ImageView iconRodape = criarImagem("box.png", 22, 22);
         iconRodape.getStyleClass().add("menu-icon");
         HBox rodape = new HBox(14, tituloRodape, iconRodape);
@@ -261,5 +262,5 @@ public class TelaPrincipal{
         msg.setContentText(mensagem);
         msg.show();
     }
-    
+
 }
