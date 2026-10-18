@@ -30,7 +30,7 @@ public class GeradorNota {
         ) {
             throw new IOException("O diretório buscado não foi encontrado.");
         }
-        File arquivo = new File(this.pathResultados, nomeArquivo + ".txt");
+        File arquivo = new File(this.pathResultados, nomeArquivo + "_alfabetico.txt");
 
         String gabarito;
         try (
@@ -60,7 +60,7 @@ public class GeradorNota {
         ) {
             throw new IOException("O diretório buscado não foi encontrado.");
         }
-        File arquivo = new File(this.pathResultados, nomeArquivo + ".txt");
+        File arquivo = new File(this.pathResultados, nomeArquivo + "_notas.txt");
 
         String gabarito;
         try (

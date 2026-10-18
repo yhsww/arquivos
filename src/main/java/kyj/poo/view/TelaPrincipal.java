@@ -72,19 +72,19 @@ public class TelaPrincipal {
         HBox cards = new HBox(16);
 
         VBox cardAlunos = criarCard(
-            "pessoa.png",
+            "black-person.png",
             "Alunos cadastrados",
             0,
             "Total de alunos"
         );
         VBox cardDisciplinas = criarCard(
-            "disciplina.png",
+            "black-desk.png",
             "Disciplinas cadastradas",
             0,
             "Total de disciplinas"
         );
         VBox cardBoletins = criarCard(
-            "resultado.png",
+            "black-folder.png",
             "Boletins registrados",
             0,
             "Total de boletins"
@@ -108,7 +108,7 @@ public class TelaPrincipal {
 
         //painel boletins
 
-        ImageView iconGerarBoletins = criarImagem("disciplina.png", 44, 44);
+        ImageView iconGerarBoletins = criarImagem("black-desk.png", 44, 44);
         Label nomeGerarBoletins = new Label("Gerar boletins");
 
         iconGerarBoletins.getStyleClass().add("acao-icon");
@@ -117,7 +117,7 @@ public class TelaPrincipal {
         VBox gerarBoletim = new VBox(14, iconGerarBoletins, nomeGerarBoletins);
 
         Button botaoGerar = new Button("Gerar");
-        botaoGerar.getStyleClass().add("botao-principal");
+        botaoGerar.getStyleClass().add("botao-secundario");
         botaoGerar.setMaxWidth(Double.MAX_VALUE);
 
         HBox acaoBoletins = new HBox(14, gerarBoletim, botaoGerar);
@@ -125,7 +125,7 @@ public class TelaPrincipal {
 
         //painel consultar resultados
 
-        ImageView iconConsulta = criarImagem("resultado.png", 44, 44);
+        ImageView iconConsulta = criarImagem("black-folder.png", 44, 44);
         Label nomeConsulta = new Label("Consultar resultados");
 
         iconConsulta.getStyleClass().add("acao-icon");
@@ -134,7 +134,7 @@ public class TelaPrincipal {
         VBox consultar = new VBox(12, iconConsulta, nomeConsulta);
 
         Button botaoConsultar = new Button("Consultar");
-        botaoConsultar.getStyleClass().add("botao-principal");
+        botaoConsultar.getStyleClass().add("botao-secundario");
         botaoConsultar.setMaxWidth(Double.MAX_VALUE);
 
         HBox acaoConsultas = new HBox(14, consultar, botaoConsultar);
@@ -143,16 +143,28 @@ public class TelaPrincipal {
         // boletins + consulta
 
         HBox painelAcoes = new HBox(18, acaoBoletins, acaoConsultas);
-        painelAcoes.setHgrow(acaoBoletins, Priority.ALWAYS);
-        painelAcoes.setHgrow(acaoConsultas, Priority.ALWAYS);
-
+        HBox.setHgrow(acaoBoletins, Priority.ALWAYS);
+        HBox.setHgrow(acaoConsultas, Priority.ALWAYS);
+    
         Region espacoBase = new Region();
         VBox.setVgrow(espacoBase, Priority.ALWAYS);
 
         //eventos botoes
 
-        botaoGerar.setOnAction(e -> exibirMensagem("teste"));
-        botaoConsultar.setOnAction(e -> exibirMensagem("teste"));
+        botaoGerar.setOnAction(e -> {
+            TelaBoletins telaBoletins = new TelaBoletins();
+            telaBoletins.mostrar(new Stage());
+        });
+
+        /*
+        
+        botaoConsultar.setOnAction(e -> {
+            TelaResultados telaResultados = new TelaResultados();
+            telaResultados.mostrar(new Stage());
+        });
+
+        */
+        
 
         conteudo
             .getChildren()
@@ -188,15 +200,17 @@ public class TelaPrincipal {
         Label rotuloMenu = new Label("Menu principal");
         rotuloMenu.getStyleClass().add("menu-secao");
 
-        Button btnInicio = criarBotaoMenu("casa.png", "Início", false);
-        Button btnAlunos = criarBotaoMenu("pessoa.png", "Alunos", false);
+        Button btnInicio = criarBotaoMenu("white-house.png", "Início", false);
+        Button btnAlunos = criarBotaoMenu("white-person.png", "Alunos", false);
+
         Button btnDisciplinas = criarBotaoMenu(
-            "disciplina.png",
+            "white-desk.png",
             "Disciplinas",
             false
         );
+
         Button btnResultados = criarBotaoMenu(
-            "resultado.png",
+            "white-folder.png",
             "Resultados",
             false
         );
@@ -207,8 +221,10 @@ public class TelaPrincipal {
         Label tituloRodape = new Label("KYJ - Gerenciador de Boletins");
         tituloRodape.getStyleClass().add("menu-texto");
         tituloRodape.setWrapText(true);
-        ImageView iconRodape = criarImagem("box.png", 22, 22);
+        ImageView iconRodape = criarImagem("white-box.png", 36, 36);
+
         iconRodape.getStyleClass().add("menu-icon");
+
         HBox rodape = new HBox(14, tituloRodape, iconRodape);
         rodape.setAlignment(Pos.CENTER_LEFT);
         rodape.getStyleClass().add("menu-rodape");
@@ -225,9 +241,24 @@ public class TelaPrincipal {
         );
 
         btnInicio.setOnAction(e -> exibirMensagem("Página Inicial"));
-        btnAlunos.setOnAction(e -> exibirMensagem("alunos..."));
-        btnDisciplinas.setOnAction(e -> exibirMensagem("disciplinas..."));
-        btnResultados.setOnAction(e -> exibirMensagem("resultados..."));
+
+        btnAlunos.setOnAction(e -> {
+                            TelaAlunos telaAlunos = new TelaAlunos();
+                            telaAlunos.mostrar(new Stage());
+        });
+
+        btnDisciplinas.setOnAction(e -> {
+            TelaBoletins telaDisciplinas = new TelaBoletins();
+            telaDisciplinas.mostrar(new Stage());;
+        });
+
+        /*
+         btnResultados.setOnAction(e -> {
+            TelaResultados telaResultados = new TelaResultados();
+            telaResultados.mostrar(new Stage());
+        });
+        */
+       
 
         return menu;
     }
@@ -250,7 +281,7 @@ public class TelaPrincipal {
         botao.setGraphic(botaoConteudo);
         botao.setMaxWidth(Double.MAX_VALUE);
         botao.setAlignment(Pos.CENTER_LEFT);
-        botao.getStyleClass().add("botao-menu");
+        botao.getStyleClass().add("botao-principal");
 
         if (selecionado) {
             botao.getStyleClass().add("selecionado");
