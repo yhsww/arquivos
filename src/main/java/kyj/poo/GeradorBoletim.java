@@ -43,19 +43,25 @@ public class GeradorBoletim {
 
         bw.write("=".repeat(40) + "\n");
         bw.newLine();
-        bw.write("Boletim Geral do Aluno"  + "\n");
+        bw.write("Boletim Geral do Aluno\n");
         bw.newLine();
         bw.write("=".repeat(40) + "\n");
         bw.newLine();
         bw.write("Aluno: " + nomeAluno + "\n");
         bw.newLine();
         for (Nota nota : boletim.getNotas()) {
-        	String disciplina_texto = "Disciplina: " + nota.getDisciplina().getNome();
-         	String nota_texto = String.format("Nota: %d\n", nota.getQtdAcertos());
+            String disciplina_texto =
+                "Disciplina: " + nota.getDisciplina().getNome();
+            String nota_texto = String.format(
+                "Nota: %d\n",
+                nota.getQtdAcertos()
+            );
             bw.write(
-            	disciplina_texto +
-            	" ".repeat(40 - disciplina_texto.length() - nota_texto.length()) +
-             	nota_texto
+                disciplina_texto +
+                    " ".repeat(
+                        40 - disciplina_texto.length() - nota_texto.length()
+                    ) +
+                    nota_texto
             );
             bw.newLine();
         }
@@ -64,10 +70,9 @@ public class GeradorBoletim {
         bw.newLine();
 
         bw.write(
-        	"Situação final: " +
-            (boletim.isAprovado()
-                ? "APROVADO(A)"
-                : "REPROVADO(A)") + "\n"
+            "Situação final: " +
+                (boletim.isAprovado() ? "APROVADO(A)" : "REPROVADO(A)") +
+                "\n"
         );
         bw.newLine();
         bw.write("=".repeat(40));
@@ -127,11 +132,7 @@ public class GeradorBoletim {
                     boletins.add(boletim);
                 }
 
-                Nota nota = new Nota(
-                    boletim.getAluno(),
-                    disciplina,
-                    acertos
-                );
+                Nota nota = new Nota(boletim.getAluno(), disciplina, acertos);
 
                 boletim.addNotas(nota);
             }

@@ -4,11 +4,11 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -17,10 +17,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import kyj.poo.Imagens;
 
-public class TelaPrincipal{
+public class TelaPrincipal {
 
-    public void mostrar(Stage stage){
-
+    public void mostrar(Stage stage) {
         BorderPane tela = new BorderPane();
         tela.getStyleClass().add("root");
 
@@ -44,23 +43,21 @@ public class TelaPrincipal{
     }
 
     private ImageView criarImagem(String nome, double largura, double altura) {
+        Image image = Imagens.carregar(nome);
 
-    Image image = Imagens.carregar(nome);
+        if (image == null) {
+            return new ImageView();
+        }
 
-    if (image == null) {
-        return new ImageView();
+        ImageView view = new ImageView(image);
+        view.setFitWidth(largura);
+        view.setFitHeight(altura);
+        view.setPreserveRatio(true);
+
+        return view;
     }
 
-    ImageView view = new ImageView(image);
-    view.setFitWidth(largura);
-    view.setFitHeight(altura);
-    view.setPreserveRatio(true);
-
-    return view;
-}
-
-    private VBox criarConteudo(){
-
+    private VBox criarConteudo() {
         VBox conteudo = new VBox(26);
         conteudo.getStyleClass().add("tela");
         conteudo.setPadding(new Insets(32, 36, 24, 36));
@@ -74,13 +71,28 @@ public class TelaPrincipal{
         VBox cabecalho = new VBox(8, titulo, subtitulo);
         HBox cards = new HBox(16);
 
-        VBox cardAlunos = criarCard("pessoa.png", "Alunos cadastrados", 0 , "Total de alunos");
-        VBox cardDisciplinas = criarCard("disciplina.png", "Disciplinas cadastradas", 0 ,"Total de disciplinas");
-        VBox cardBoletins = criarCard("resultado.png", "Boletins registrados", 0, "Total de boletins");
+        VBox cardAlunos = criarCard(
+            "pessoa.png",
+            "Alunos cadastrados",
+            0,
+            "Total de alunos"
+        );
+        VBox cardDisciplinas = criarCard(
+            "disciplina.png",
+            "Disciplinas cadastradas",
+            0,
+            "Total de disciplinas"
+        );
+        VBox cardBoletins = criarCard(
+            "resultado.png",
+            "Boletins registrados",
+            0,
+            "Total de boletins"
+        );
 
         cards.getChildren().addAll(cardAlunos, cardDisciplinas, cardBoletins);
 
-        for(var card : cards.getChildren()){
+        for (var card : cards.getChildren()) {
             HBox.setHgrow(card, Priority.ALWAYS);
         }
 
@@ -142,15 +154,14 @@ public class TelaPrincipal{
         botaoGerar.setOnAction(e -> exibirMensagem("teste"));
         botaoConsultar.setOnAction(e -> exibirMensagem("teste"));
 
-        conteudo.getChildren().addAll(cabecalho, cards, cabecalhoAcoes, painelAcoes, espacoBase);
+        conteudo
+            .getChildren()
+            .addAll(cabecalho, cards, cabecalhoAcoes, painelAcoes, espacoBase);
 
         return conteudo;
-
-
     }
 
-    private VBox criarMenu(){
-
+    private VBox criarMenu() {
         //menu lateral
         VBox menu = new VBox(8);
 
@@ -179,8 +190,16 @@ public class TelaPrincipal{
 
         Button btnInicio = criarBotaoMenu("casa.png", "Início", false);
         Button btnAlunos = criarBotaoMenu("pessoa.png", "Alunos", false);
-        Button btnDisciplinas = criarBotaoMenu("disciplina.png", "Disciplinas", false);
-        Button btnResultados = criarBotaoMenu("resultado.png", "Resultados", false);
+        Button btnDisciplinas = criarBotaoMenu(
+            "disciplina.png",
+            "Disciplinas",
+            false
+        );
+        Button btnResultados = criarBotaoMenu(
+            "resultado.png",
+            "Resultados",
+            false
+        );
 
         Region espaco = new Region();
         VBox.setVgrow(espaco, Priority.ALWAYS);
@@ -194,7 +213,16 @@ public class TelaPrincipal{
         rodape.setAlignment(Pos.CENTER_LEFT);
         rodape.getStyleClass().add("menu-rodape");
 
-        menu.getChildren().addAll(cabecalho, rotuloMenu, btnInicio, btnAlunos, btnDisciplinas, btnResultados, espaco, rodape);
+        menu.getChildren().addAll(
+            cabecalho,
+            rotuloMenu,
+            btnInicio,
+            btnAlunos,
+            btnDisciplinas,
+            btnResultados,
+            espaco,
+            rodape
+        );
 
         btnInicio.setOnAction(e -> exibirMensagem("Página Inicial"));
         btnAlunos.setOnAction(e -> exibirMensagem("alunos..."));
@@ -202,12 +230,13 @@ public class TelaPrincipal{
         btnResultados.setOnAction(e -> exibirMensagem("resultados..."));
 
         return menu;
-
     }
 
-
-    private Button criarBotaoMenu(String icon, String texto, boolean selecionado){
-
+    private Button criarBotaoMenu(
+        String icon,
+        String texto,
+        boolean selecionado
+    ) {
         ImageView bIcon = criarImagem(icon, 22, 22);
         bIcon.getStyleClass().add("menu-icon");
 
@@ -223,16 +252,14 @@ public class TelaPrincipal{
         botao.setAlignment(Pos.CENTER_LEFT);
         botao.getStyleClass().add("botao-menu");
 
-        if(selecionado){
+        if (selecionado) {
             botao.getStyleClass().add("selecionado");
         }
 
         return botao;
-
     }
 
-    private VBox criarCard(String icon, String titulo, int valor, String desc){
-
+    private VBox criarCard(String icon, String titulo, int valor, String desc) {
         ImageView cIcon = criarImagem(icon, 40, 40);
         cIcon.getStyleClass().add("card-icon");
 
@@ -251,16 +278,13 @@ public class TelaPrincipal{
         card.setPadding(new Insets(20));
 
         return card;
-
     }
 
-    private void exibirMensagem(String mensagem){
-
+    private void exibirMensagem(String mensagem) {
         Alert msg = new Alert(AlertType.INFORMATION);
         msg.setTitle("Gerenciador de Boletins");
         msg.setHeaderText(null);
         msg.setContentText(mensagem);
         msg.show();
     }
-
 }

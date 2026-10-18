@@ -1,18 +1,17 @@
 package kyj.poo;
 
-import java.io.IOException;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import kyj.poo.view.TelaPrincipal;
 
-public class Main extends Application{
+public class Main extends Application {
 
-    public void start(Stage stage){
+    public void start(Stage stage) {
         TelaPrincipal tela = new TelaPrincipal();
         tela.mostrar(stage);
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         launch(args);
     }
 }
