@@ -1,3 +1,4 @@
+
 package kyj.poo.view;
 
 import java.io.BufferedReader;
@@ -6,143 +7,224 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import kyj.poo.models.Aluno;
 
 public class TelaAlunos {
 
-private final File arquivo = new File("dados/alunos.txt");
-private final ListView<String> lista = new ListView<>();
-private final TextField campoNome = new TextField();
+    private final File arquivoAlunos = new File("dados/alunos.txt");
 
-public void mostrar(Stage stage){
+    private final ListView<Aluno> lista = new ListView<>();
 
-    Label titulo = new Label("Alunos");
-    titulo.getStyleClass().add("titulo-pagina");
+    private final TextField campoNome = new TextField();
 
-    Label subtitulo = new Label("Consultar e cadastrar alunos.");
-    subtitulo.getStyleClass().add("subtitulo-pagina");
+    public void mostrar(Stage stage) {
 
-    Label rotulo = new Label("Nome completo do aluno:");
-    rotulo.getStyleClass().add("aux-secao");
-    campoNome.setPromptText("Insira o nome do aluno");
+        this.campoNome.setPromptText("Nome completo do aluno");
+        configurarLista();
 
-    Label tituloLista = new Label("Alunos cadastrados");
-    tituloLista.getStyleClass().add("titulo-secao");
+        Button btnCadastrar = new Button("Cadastrar aluno");
+        Button btnRemover = new Button("Excluir aluno");
+        Button btnAtualizar = new Button("Atualizar lista");
 
-    lista.setPlaceholder(new Label("Nenhum aluno cadastrado."));
+        btnCadastrar.setOnAction(e -> cadastrarAluno());
+        btnRemover.setOnAction(e -> removerAluno());
+        btnAtualizar.setOnAction(e -> carregarAlunos());
 
-    campoNome.setOnAction(e -> cadastrarAlunos());
+        VBox conteudo = new VBox(10);
+        conteudo.setPadding(new Insets(15));
 
-    VBox conteudo = new VBox(14, titulo, subtitulo, rotulo, campoNome, tituloLista, lista);
-    conteudo.getStyleClass().add("tela");
-    conteudo.setPadding(new Insets(30));
+        conteudo.getChildren().addAll(
+            new Label("Alunos"),
+            this.campoNome,
+            btnCadastrar,
+            btnRemover,
+            btnAtualizar,
+            new Label("Alunos cadastrados"),
+            this.lista
+        );
 
-    Scene scene = new Scene(conteudo, 650, 600);
+        Scene scene = new Scene(conteudo, 450, 550);
 
-    var css = getClass().getResource("/estilo.css");
+        var css = getClass().getResource("/estilo.css");
 
-    if(css != null){
-        scene.getStylesheets().add(css.toExternalForm());
+        if (css != null) {
+            scene.getStylesheets().add(css.toExternalForm());
+        }
+
+        stage.setTitle("KYJ");
+        stage.setScene(scene);
+
+        carregarAlunos();
+
+        stage.show();
     }
 
-    carregarAlunos();
+    private void configurarLista() {
 
-    stage.setTitle("KYJ");
-    stage.setScene(scene);
-    stage.show();
+        this.lista.setCellFactory(listView -> new ListCell<Aluno>() {
 
-}
+            protected void updateItem(Aluno aluno, boolean vazio) {
+                super.updateItem(aluno, vazio);
 
-
-private void cadastrarAlunos(){
-
-    String nome = campoNome.getText().trim();
-
-    if(nome.isEmpty()){
-        exibirMensagem(AlertType.WARNING, "Insira o nome do aluno.");
-        return;
+                if(vazio || aluno == null){
+                    setText(null);
+                }else{
+                    setText(aluno.getNome());
+                }
+            }
+        });
     }
 
-    for(String nomeCadastrado : lista.getItems()){
-        if(nome.equalsIgnoreCase(nomeCadastrado)){
-            exibirMensagem(AlertType.WARNING, "Aluno já cadastrado.");
+    private void cadastrarAluno() {
+
+        String nome = this.campoNome.getText().trim();
+
+        if(nome.isEmpty()){
+            exibirMensagem(AlertType.WARNING,"Digite o nome do aluno.");
             return;
         }
-    }
 
-    List<String> nomes = new ArrayList<>(lista.getItems());
-    nomes.add(nome);
-    Collections.sort(nomes);
+        for(Aluno aluno : this.lista.getItems()){
 
-    try{
-
-        File path = new File("dados");
-        path.mkdirs();
-
-        BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo));
-
-        for(String aluno: nomes){
-            bw.write(aluno);
-            bw.newLine();
+            if(aluno.getNome().equalsIgnoreCase(nome)){
+                exibirMensagem(AlertType.WARNING,"Esse aluno já está cadastrado.");
+                return;
+            }
         }
 
-        bw.close();
+        Aluno aluno = new Aluno(nome, "");
 
-        lista.getItems().clear();
-        lista.getItems().addAll(nomes);
-        campoNome.clear();
+        lista.getItems().add(aluno);
+        ordenarAlunos();
 
-        exibirMensagem(AlertType.CONFIRMATION, "Aluno cadastrado com sucesso.");
-
-    }catch(IOException e){
-
-        exibirMensagem(AlertType.ERROR, "Falha ao cadastrar aluno.");
-    }
-
-}
-
-private void carregarAlunos(){
-
-    try{
-
-        File path = new File("dados");
-        path.mkdirs();
-
-        if(!arquivo.exists()) return;
-
-        BufferedReader br = new BufferedReader(new FileReader(arquivo));
-        String linha;
-
-        while((linha = br.readLine()) != null){
-            lista.getItems().add(linha);
+        if(!salvarAlunos()){
+            this.lista.getItems().remove(aluno);
+            return;
         }
 
-        br.close();
+        this.campoNome.clear();
 
-    }catch(IOException e){
-
-        exibirMensagem(AlertType.ERROR, "Falha ao carregar alunos");
+        exibirMensagem(AlertType.CONFIRMATION,"Aluno cadastrado com sucesso.");
     }
-}
 
-private void exibirMensagem(AlertType tipo, String mensagem) {
+    private void removerAluno() {
 
-    Alert alerta = new Alert(AlertType.ERROR);
-    alerta.setTitle("Gerenciador de Boletins");
-    alerta.setHeaderText(null);
-    alerta.setContentText(mensagem);
-    alerta.show();
-}
+        Aluno selecionado = this.lista.getSelectionModel().getSelectedItem();
 
+        if (selecionado == null){
+            exibirMensagem(AlertType.WARNING,"Selecione um aluno.");
+            return;
+        }
+
+        Alert confirmacao = new Alert(AlertType.CONFIRMATION,"Deseja excluir " + selecionado.getNome()+ " do cadastro?"
+        );
+
+        confirmacao.setHeaderText("Confirmar exclusão");
+
+        if (confirmacao.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) {
+            return;
+        }
+
+        this.lista.getItems().remove(selecionado);
+
+        if (!salvarAlunos()) {
+            this.lista.getItems().add(selecionado);
+            ordenarAlunos();
+            return;
+        }
+
+        exibirMensagem(AlertType.CONFIRMATION,"Aluno removido do cadastro.");
+    }
+
+    private void carregarAlunos() {
+
+        this.lista.getItems().clear();
+
+        if(!arquivoAlunos.exists()){
+            return;
+        }
+
+        try(BufferedReader br = new BufferedReader(new FileReader(arquivoAlunos))){
+
+            String linha;
+
+            while ((linha = br.readLine()) != null) {
+
+                String nome = linha.trim();
+
+                if(nome.isEmpty()){
+                    continue;
+                }
+
+                boolean existe = false;
+
+                for (Aluno aluno : this.lista.getItems()) {
+                    if(aluno.getNome().equalsIgnoreCase(nome)){
+                        existe = true;
+                        break;
+                    }
+                }
+
+                if(!existe){
+                    this.lista.getItems().add(new Aluno(nome, ""));
+                }
+            }
+
+            ordenarAlunos();
+
+        }catch (IOException e){
+            exibirMensagem(AlertType.ERROR,"Falha ao carregar os alunos.");
+        }
+    }
+
+    private boolean salvarAlunos() {
+
+        File pasta = this.arquivoAlunos.getParentFile();
+
+        if(pasta != null && !pasta.exists()){
+            pasta.mkdirs();
+        }
+
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter(arquivoAlunos))){
+
+            for(Aluno aluno : this.lista.getItems()){
+                bw.write(aluno.getNome());
+                bw.newLine();
+            }
+
+            return true;
+
+        }catch(IOException e){
+
+            exibirMensagem(AlertType.ERROR,"Falha ao salvar os alunos.");
+            return false;
+        }
+    }
+
+    private void ordenarAlunos() {
+
+        this.lista.getItems().sort((a1, a2) -> a1.getNome().compareToIgnoreCase(a2.getNome()));
+    }
+
+    private void exibirMensagem(AlertType tipo, String mensagem) {
+
+        Alert alerta = new Alert(tipo);
+        alerta.setTitle("Gerenciador de Boletins");
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensagem);
+        alerta.showAndWait();
+    }
 }

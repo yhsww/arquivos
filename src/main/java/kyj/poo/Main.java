@@ -1,5 +1,6 @@
 package kyj.poo;
 
+import atlantafx.base.theme.PrimerLight;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import kyj.poo.view.TelaPrincipal;
@@ -7,6 +8,9 @@ import kyj.poo.view.TelaPrincipal;
 public class Main extends Application {
 
     public void start(Stage stage) {
+
+        Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
+
         TelaPrincipal tela = new TelaPrincipal();
         tela.mostrar(stage);
     }

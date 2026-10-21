@@ -156,14 +156,11 @@ public class TelaPrincipal {
             telaBoletins.mostrar(new Stage());
         });
 
-        /*
-        
+       
         botaoConsultar.setOnAction(e -> {
             TelaResultados telaResultados = new TelaResultados();
             telaResultados.mostrar(new Stage());
         });
-
-        */
         
 
         conteudo
@@ -242,24 +239,22 @@ public class TelaPrincipal {
 
         btnInicio.setOnAction(e -> exibirMensagem("Página Inicial"));
 
+        btnDisciplinas.setOnAction(e -> {
+            TelaDisciplinas telaDisciplinas = new TelaDisciplinas();
+            telaDisciplinas.mostrar(new Stage());
+        });
+
         btnAlunos.setOnAction(e -> {
                             TelaAlunos telaAlunos = new TelaAlunos();
                             telaAlunos.mostrar(new Stage());
         });
 
-        btnDisciplinas.setOnAction(e -> {
-            TelaBoletins telaDisciplinas = new TelaBoletins();
-            telaDisciplinas.mostrar(new Stage());;
-        });
 
-        /*
          btnResultados.setOnAction(e -> {
             TelaResultados telaResultados = new TelaResultados();
             telaResultados.mostrar(new Stage());
         });
-        */
        
-
         return menu;
     }
 
