@@ -8,8 +8,9 @@ import kyj.poo.view.TelaPrincipal;
 public class Main extends Application {
 
     public void start(Stage stage) {
-
-        Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
+        Application.setUserAgentStylesheet(
+            new PrimerLight().getUserAgentStylesheet()
+        );
 
         TelaPrincipal tela = new TelaPrincipal();
         tela.mostrar(stage);

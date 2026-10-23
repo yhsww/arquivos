@@ -39,9 +39,7 @@ public class GeradorBoletim {
 
         File arquivo = new File(this.pathBoletins, nomeArquivo + ".txt");
 
-        try (
-            BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo))
-        ) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo))) {
             bw.write("=".repeat(40));
             bw.newLine();
             bw.write("Boletim Geral do Aluno");
@@ -140,7 +138,11 @@ public class GeradorBoletim {
                         boletins.add(boletim);
                     }
 
-                    Nota nota = new Nota(boletim.getAluno(), disciplina, acertos);
+                    Nota nota = new Nota(
+                        boletim.getAluno(),
+                        disciplina,
+                        acertos
+                    );
 
                     boletim.addNotas(nota);
                 }

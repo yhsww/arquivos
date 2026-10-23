@@ -1,4 +1,3 @@
-
 package kyj.poo.view;
 
 import java.io.BufferedReader;
@@ -24,7 +23,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-
 import kyj.poo.GeradorNota;
 import kyj.poo.models.Aluno;
 import kyj.poo.models.Disciplina;
@@ -42,7 +40,6 @@ public class TelaDisciplinas {
     private final TextField[] campoGabarito = new TextField[10];
 
     public void mostrar(Stage stage) {
-
         campoNome.setPromptText("Nome da disciplina");
 
         configurarLista();
@@ -73,7 +70,9 @@ public class TelaDisciplinas {
         btnAtualizarGabarito.setOnAction(e -> atualizarGabarito());
         btnRemoverGabarito.setOnAction(e -> removerGabarito());
 
-        lista.getSelectionModel().selectedItemProperty()
+        lista
+            .getSelectionModel()
+            .selectedItemProperty()
             .addListener((obs, antiga, selecionada) -> {
                 carregarGabarito(selecionada);
                 carregarRespostas();
@@ -135,56 +134,62 @@ public class TelaDisciplinas {
     }
 
     private void configurarLista() {
+        this.lista.setCellFactory(lv ->
+            new ListCell<Disciplina>() {
+                protected void updateItem(
+                    Disciplina disciplina,
+                    boolean vazio
+                ) {
+                    super.updateItem(disciplina, vazio);
 
-        this.lista.setCellFactory(lv -> new ListCell<Disciplina>() {
-
-            protected void updateItem(Disciplina disciplina, boolean vazio) {
-                super.updateItem(disciplina, vazio);
-
-                if (vazio || disciplina == null) {
-                    setText(null);
-                } else {
-                    setText(disciplina.getNome());
+                    if (vazio || disciplina == null) {
+                        setText(null);
+                    } else {
+                        setText(disciplina.getNome());
+                    }
                 }
             }
-        });
+        );
     }
 
     private void configurarComboAlunos() {
+        comboAlunos.setCellFactory(listView ->
+            new ListCell<Aluno>() {
+                protected void updateItem(Aluno aluno, boolean vazio) {
+                    super.updateItem(aluno, vazio);
 
-        comboAlunos.setCellFactory(listView -> new ListCell<Aluno>() {
-
-            protected void updateItem(Aluno aluno, boolean vazio) {
-                super.updateItem(aluno, vazio);
-
-                setText(vazio || aluno == null ? null : aluno.getNome());
+                    setText(vazio || aluno == null ? null : aluno.getNome());
+                }
             }
-        });
+        );
 
-        comboAlunos.setButtonCell(new ListCell<Aluno>() {
+        comboAlunos.setButtonCell(
+            new ListCell<Aluno>() {
+                protected void updateItem(Aluno aluno, boolean vazio) {
+                    super.updateItem(aluno, vazio);
 
-            protected void updateItem(Aluno aluno, boolean vazio) {
-                super.updateItem(aluno, vazio);
-
-                setText(vazio || aluno == null ? null : aluno.getNome());
+                    setText(vazio || aluno == null ? null : aluno.getNome());
+                }
             }
-        });
+        );
 
         this.comboAlunos.setMaxWidth(Double.MAX_VALUE);
     }
 
     private void cadastrarDisciplina() {
-
         String nome = this.campoNome.getText().trim();
 
-        if(nome.isEmpty()){
-            exibirMensagem(AlertType.WARNING,"Digite o nome da disciplina.");
+        if (nome.isEmpty()) {
+            exibirMensagem(AlertType.WARNING, "Digite o nome da disciplina.");
             return;
         }
 
         for (Disciplina d : lista.getItems()) {
-            if(d.getNome().equalsIgnoreCase(nome)){
-                exibirMensagem(AlertType.WARNING,"Essa disciplina já está cadastrada.");
+            if (d.getNome().equalsIgnoreCase(nome)) {
+                exibirMensagem(
+                    AlertType.WARNING,
+                    "Essa disciplina já está cadastrada."
+                );
                 return;
             }
         }
@@ -194,35 +199,42 @@ public class TelaDisciplinas {
         this.lista.getItems().add(disciplina);
         ordenarDisciplinas();
 
-        if(!salvarDisciplinas()){
+        if (!salvarDisciplinas()) {
             lista.getItems().remove(disciplina);
             return;
         }
 
         this.campoNome.clear();
 
-        exibirMensagem(AlertType.INFORMATION,"Disciplina cadastrada com sucesso.");
+        exibirMensagem(
+            AlertType.INFORMATION,
+            "Disciplina cadastrada com sucesso."
+        );
     }
 
     private void removerDisciplina() {
-
         Disciplina disciplina = disciplinaSelecionada();
 
-        if(disciplina == null){
+        if (disciplina == null) {
             return;
         }
 
-        Alert confirmacao = new Alert(AlertType.CONFIRMATION, "Excluir a disciplina " + disciplina.getNome() + "?");
+        Alert confirmacao = new Alert(
+            AlertType.CONFIRMATION,
+            "Excluir a disciplina " + disciplina.getNome() + "?"
+        );
 
         confirmacao.setHeaderText("Confirmar exclusão");
 
-        if(confirmacao.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK){
+        if (
+            confirmacao.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK
+        ) {
             return;
         }
 
         this.lista.getItems().remove(disciplina);
 
-        if (!salvarDisciplinas()){
+        if (!salvarDisciplinas()) {
             this.lista.getItems().add(disciplina);
             ordenarDisciplinas();
             return;
@@ -231,130 +243,139 @@ public class TelaDisciplinas {
         limparCampos(campoGabarito);
         limparCampos(campoRespostas);
 
-        exibirMensagem(AlertType.INFORMATION,"Disciplina removida do cadastro.");
+        exibirMensagem(
+            AlertType.INFORMATION,
+            "Disciplina removida do cadastro."
+        );
     }
 
     private void carregarDisciplinas() {
-
         this.lista.getItems().clear();
 
-        if(!arquivoDisciplinas.exists()){
+        if (!arquivoDisciplinas.exists()) {
             return;
         }
 
-        try(BufferedReader br = new BufferedReader(new FileReader(arquivoDisciplinas))){
-
+        try (
+            BufferedReader br = new BufferedReader(
+                new FileReader(arquivoDisciplinas)
+            )
+        ) {
             String linha;
 
             while ((linha = br.readLine()) != null) {
-
                 String nome = linha.trim();
 
-                if(nome.isEmpty()){
+                if (nome.isEmpty()) {
                     continue;
                 }
 
                 boolean existe = false;
 
-                for(Disciplina d : lista.getItems()){
-                    if(d.getNome().equalsIgnoreCase(nome)){
+                for (Disciplina d : lista.getItems()) {
+                    if (d.getNome().equalsIgnoreCase(nome)) {
                         existe = true;
                         break;
                     }
                 }
 
-                if(!existe){
+                if (!existe) {
                     this.lista.getItems().add(new Disciplina(nome));
                 }
             }
 
             ordenarDisciplinas();
-
-        }catch (IOException e){
-            exibirMensagem(AlertType.ERROR,"Falha ao carregar as disciplinas.");
+        } catch (IOException e) {
+            exibirMensagem(
+                AlertType.ERROR,
+                "Falha ao carregar as disciplinas."
+            );
         }
     }
 
-    private boolean salvarDisciplinas(){
-
+    private boolean salvarDisciplinas() {
         File pasta = arquivoDisciplinas.getParentFile();
 
-        if(pasta != null && !pasta.exists()){
+        if (pasta != null && !pasta.exists()) {
             pasta.mkdirs();
         }
 
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter(arquivoDisciplinas))){
-
-            for(Disciplina d : lista.getItems()){
+        try (
+            BufferedWriter bw = new BufferedWriter(
+                new FileWriter(arquivoDisciplinas)
+            )
+        ) {
+            for (Disciplina d : lista.getItems()) {
                 bw.write(d.getNome());
                 bw.newLine();
             }
 
             return true;
-
-        }catch(IOException e){
-
-            exibirMensagem(AlertType.ERROR,"Falha ao salvar as disciplinas.");
+        } catch (IOException e) {
+            exibirMensagem(AlertType.ERROR, "Falha ao salvar as disciplinas.");
             return false;
         }
     }
 
-    private void ordenarDisciplinas(){
-
-        this.lista.getItems().sort((d1, d2) -> d1.getNome().compareToIgnoreCase(d2.getNome()));
+    private void ordenarDisciplinas() {
+        this.lista
+            .getItems()
+            .sort((d1, d2) -> d1.getNome().compareToIgnoreCase(d2.getNome()));
     }
 
     private void carregarAlunos() {
-
         this.comboAlunos.getItems().clear();
 
         if (!arquivoAlunos.exists()) {
-            exibirMensagem(AlertType.WARNING,"Cadastre alunos primeiro.");
+            exibirMensagem(AlertType.WARNING, "Cadastre alunos primeiro.");
             return;
         }
 
-        try(BufferedReader br = new BufferedReader(new FileReader(arquivoAlunos))){
-
+        try (
+            BufferedReader br = new BufferedReader(
+                new FileReader(arquivoAlunos)
+            )
+        ) {
             String linha;
 
             while ((linha = br.readLine()) != null) {
-
                 String nome = linha.trim();
 
-                if(nome.isEmpty()){
+                if (nome.isEmpty()) {
                     continue;
                 }
 
                 boolean existe = false;
 
                 for (Aluno aluno : comboAlunos.getItems()) {
-                    if(aluno.getNome().equalsIgnoreCase(nome)){
+                    if (aluno.getNome().equalsIgnoreCase(nome)) {
                         existe = true;
                         break;
                     }
                 }
 
-                if(!existe){
+                if (!existe) {
                     this.comboAlunos.getItems().add(new Aluno(nome, ""));
                 }
             }
 
-            this.comboAlunos.getItems().sort((a1, a2) -> a1.getNome().compareToIgnoreCase(a2.getNome()));
-
-        }catch (IOException e){
-            exibirMensagem(AlertType.ERROR,"Falha ao carregar os alunos.");
+            this.comboAlunos
+                .getItems()
+                .sort((a1, a2) ->
+                    a1.getNome().compareToIgnoreCase(a2.getNome())
+                );
+        } catch (IOException e) {
+            exibirMensagem(AlertType.ERROR, "Falha ao carregar os alunos.");
         }
     }
 
     private GridPane criarCampos(TextField[] campos) {
-
         GridPane grade = new GridPane();
         grade.setHgap(8);
         grade.setVgap(8);
 
-        for(int i = 0; i < 10; i++){
-
-            Label numero = new Label((i + 1) + ".");
+        for (int i = 0; i < 10; i++) {
+            Label numero = new Label(i + 1 + ".");
             TextField campo = new TextField();
 
             campo.setPromptText("V/F");
@@ -366,21 +387,25 @@ public class TelaDisciplinas {
             int coluna = i % 5;
             int linha = i / 5;
 
-            grade.add(numero, coluna*2, linha);
-            grade.add(campo, coluna*2+1, linha);
+            grade.add(numero, coluna * 2, linha);
+            grade.add(campo, coluna * 2 + 1, linha);
         }
 
         return grade;
     }
 
     private File arquivoProva(Disciplina disciplina) {
-
-        return new File(this.pastaProvas, nomeValido(disciplina.getNome()) + ".txt");
+        return new File(
+            this.pastaProvas,
+            nomeValido(disciplina.getNome()) + ".txt"
+        );
     }
 
     private File arquivoGabarito(Disciplina disciplina) {
-
-        return new File(this.pastaGabaritos, nomeValido(disciplina.getNome()) + ".txt");
+        return new File(
+            this.pastaGabaritos,
+            nomeValido(disciplina.getNome()) + ".txt"
+        );
     }
 
     private String nomeValido(String nome) {
@@ -388,37 +413,41 @@ public class TelaDisciplinas {
     }
 
     private Disciplina disciplinaSelecionada() {
+        Disciplina disciplina = this.lista
+            .getSelectionModel()
+            .getSelectedItem();
 
-        Disciplina disciplina = this.lista.getSelectionModel().getSelectedItem();
-
-        if(disciplina == null){
-            exibirMensagem(AlertType.WARNING,"Selecione uma disciplina primeiro.");
+        if (disciplina == null) {
+            exibirMensagem(
+                AlertType.WARNING,
+                "Selecione uma disciplina primeiro."
+            );
         }
 
         return disciplina;
     }
 
     private Aluno alunoSelecionado() {
-
         Aluno aluno = this.comboAlunos.getValue();
 
-        if(aluno == null){
-            exibirMensagem(AlertType.WARNING,"Selecione um aluno.");
+        if (aluno == null) {
+            exibirMensagem(AlertType.WARNING, "Selecione um aluno.");
         }
 
         return aluno;
     }
 
     private String obterSequencia(TextField[] campos) {
-
         StringBuilder sequencia = new StringBuilder();
 
-        for(TextField campo : campos){
-
+        for (TextField campo : campos) {
             String resposta = campo.getText().trim().toUpperCase();
 
             if (!resposta.matches("[VF]")) {
-                exibirMensagem(AlertType.WARNING,"Preencha as dez questões somente com V ou F.");
+                exibirMensagem(
+                    AlertType.WARNING,
+                    "Preencha as dez questões somente com V ou F."
+                );
                 return null;
             }
 
@@ -429,263 +458,303 @@ public class TelaDisciplinas {
     }
 
     private void salvarRespostas() {
-
         Disciplina disciplina = disciplinaSelecionada();
-        if(disciplina == null) return;
+        if (disciplina == null) return;
 
         Aluno aluno = alunoSelecionado();
-        if(aluno == null) return;
+        if (aluno == null) return;
 
         String respostas = obterSequencia(campoRespostas);
-        if(respostas == null) return;
+        if (respostas == null) return;
 
         File arquivo = arquivoProva(disciplina);
 
         if (!pastaProvas.exists() && !pastaProvas.mkdirs()) {
-            exibirMensagem(AlertType.ERROR,"Não foi possível criar a pasta das provas.");
+            exibirMensagem(
+                AlertType.ERROR,
+                "Não foi possível criar a pasta das provas."
+            );
             return;
         }
 
         List<String> linhas = new ArrayList<>();
         boolean atualizado = false;
 
-        try{
-
-            if(arquivo.exists()){
-                try(BufferedReader br =new BufferedReader(new FileReader(arquivo))){
-
+        try {
+            if (arquivo.exists()) {
+                try (
+                    BufferedReader br = new BufferedReader(
+                        new FileReader(arquivo)
+                    )
+                ) {
                     String linha;
 
-                    while((linha = br.readLine()) != null){
-
+                    while ((linha = br.readLine()) != null) {
                         String[] partes = linha.split("\t", 2);
 
-                        if(partes.length == 2 && partes[1].trim().equalsIgnoreCase(aluno.getNome())) {
-
+                        if (
+                            partes.length == 2 &&
+                            partes[1].trim().equalsIgnoreCase(aluno.getNome())
+                        ) {
                             linhas.add(respostas + "\t" + aluno.getNome());
                             atualizado = true;
-
-                        }else{
+                        } else {
                             linhas.add(linha);
                         }
                     }
                 }
             }
 
-            if(!atualizado){
+            if (!atualizado) {
                 linhas.add(respostas + "\t" + aluno.getNome());
             }
 
-            try(BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo))){
-
-                for(String linha : linhas){
+            try (
+                BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo))
+            ) {
+                for (String linha : linhas) {
                     bw.write(linha);
                     bw.newLine();
                 }
             }
 
-            exibirMensagem(AlertType.INFORMATION, atualizado ? "Respostas atualizadas com sucesso." : "Respostas registradas com sucesso.");
+            exibirMensagem(
+                AlertType.INFORMATION,
+                atualizado
+                    ? "Respostas atualizadas com sucesso."
+                    : "Respostas registradas com sucesso."
+            );
 
             atualizarResultados();
-
-        }catch(IOException e){
-            exibirMensagem(AlertType.ERROR,"Falha ao salvar as respostas da prova.");
+        } catch (IOException e) {
+            exibirMensagem(
+                AlertType.ERROR,
+                "Falha ao salvar as respostas da prova."
+            );
         }
     }
 
     private void carregarRespostas() {
-
         limparCampos(campoRespostas);
 
-        Disciplina disciplina = this.lista.getSelectionModel().getSelectedItem();
+        Disciplina disciplina = this.lista
+            .getSelectionModel()
+            .getSelectedItem();
 
         Aluno aluno = this.comboAlunos.getValue();
 
-        if(disciplina == null || aluno == null){
+        if (disciplina == null || aluno == null) {
             return;
         }
 
         File arquivo = arquivoProva(disciplina);
 
-        if(!arquivo.exists()) {
+        if (!arquivo.exists()) {
             return;
         }
 
-        try(BufferedReader br = new BufferedReader(new FileReader(arquivo))) {
-
+        try (BufferedReader br = new BufferedReader(new FileReader(arquivo))) {
             String linha;
 
-            while((linha = br.readLine()) != null){
-
+            while ((linha = br.readLine()) != null) {
                 String[] partes = linha.split("\t", 2);
 
-                if(partes.length != 2){
+                if (partes.length != 2) {
                     continue;
                 }
 
-                if(partes[1].trim().equalsIgnoreCase(aluno.getNome())){
-
+                if (partes[1].trim().equalsIgnoreCase(aluno.getNome())) {
                     String respostas = partes[0].trim().toUpperCase();
 
                     if (!respostas.matches("[VF]{10}")) {
-                        exibirMensagem(AlertType.ERROR,"As respostas para esse aluno são inválidas.");
+                        exibirMensagem(
+                            AlertType.ERROR,
+                            "As respostas para esse aluno são inválidas."
+                        );
                         return;
                     }
 
-                    for(int i = 0; i < 10; i++){
-                        campoRespostas[i].setText(String.valueOf(respostas.charAt(i)));
+                    for (int i = 0; i < 10; i++) {
+                        campoRespostas[i].setText(
+                            String.valueOf(respostas.charAt(i))
+                        );
                     }
 
                     return;
                 }
             }
-
-        }catch (IOException e){
-            exibirMensagem(AlertType.ERROR,"Falha ao carregar as respostas.");
+        } catch (IOException e) {
+            exibirMensagem(AlertType.ERROR, "Falha ao carregar as respostas.");
         }
     }
 
     private void cadastrarGabarito() {
-
         Disciplina disciplina = disciplinaSelecionada();
-        if(disciplina == null) return;
+        if (disciplina == null) return;
 
         File arquivo = arquivoGabarito(disciplina);
 
-        if(arquivo.exists()){
-            exibirMensagem(AlertType.WARNING, "Essa disciplina já possui gabarito.");
+        if (arquivo.exists()) {
+            exibirMensagem(
+                AlertType.WARNING,
+                "Essa disciplina já possui gabarito."
+            );
             return;
         }
 
         String gabarito = obterSequencia(campoGabarito);
-        if(gabarito == null) return;
+        if (gabarito == null) return;
 
-        if(!pastaGabaritos.exists() && !pastaGabaritos.mkdirs()){
-            exibirMensagem(AlertType.ERROR,"Não foi possível criar a pasta de gabaritos.");
+        if (!pastaGabaritos.exists() && !pastaGabaritos.mkdirs()) {
+            exibirMensagem(
+                AlertType.ERROR,
+                "Não foi possível criar a pasta de gabaritos."
+            );
             return;
         }
 
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo))){
-
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo))) {
             bw.write(gabarito);
-        }catch (IOException e){
-            exibirMensagem(AlertType.ERROR,"Falha ao salvar o gabarito.");
+        } catch (IOException e) {
+            exibirMensagem(AlertType.ERROR, "Falha ao salvar o gabarito.");
             return;
         }
 
         atualizarResultados();
-        exibirMensagem(AlertType.INFORMATION, "Gabarito cadastrado com sucesso.");
+        exibirMensagem(
+            AlertType.INFORMATION,
+            "Gabarito cadastrado com sucesso."
+        );
     }
 
     private void carregarGabarito(Disciplina disciplina) {
-
         limparCampos(campoGabarito);
 
-        if(disciplina == null) return;
+        if (disciplina == null) return;
 
         File arquivo = arquivoGabarito(disciplina);
 
-        if(!arquivo.exists()) return;
+        if (!arquivo.exists()) return;
 
-        try(BufferedReader br = new BufferedReader(new FileReader(arquivo))) {
-
+        try (BufferedReader br = new BufferedReader(new FileReader(arquivo))) {
             String gabarito = br.readLine();
 
-            if(gabarito == null || !gabarito.matches("[VF]{10}") || br.readLine() != null) {
-
-                exibirMensagem(AlertType.ERROR,"O arquivo do gabarito é inválido.");
+            if (
+                gabarito == null ||
+                !gabarito.matches("[VF]{10}") ||
+                br.readLine() != null
+            ) {
+                exibirMensagem(
+                    AlertType.ERROR,
+                    "O arquivo do gabarito é inválido."
+                );
                 return;
             }
 
-            for(int i = 0; i < 10; i++){
+            for (int i = 0; i < 10; i++) {
                 campoGabarito[i].setText(String.valueOf(gabarito.charAt(i)));
             }
-
-        }catch (IOException e){
-            exibirMensagem(AlertType.ERROR,"Falha ao carregar o gabarito.");
+        } catch (IOException e) {
+            exibirMensagem(AlertType.ERROR, "Falha ao carregar o gabarito.");
         }
     }
 
     private void atualizarGabarito() {
-
         Disciplina disciplina = disciplinaSelecionada();
-        if(disciplina == null) return;
+        if (disciplina == null) return;
 
         File arquivo = arquivoGabarito(disciplina);
 
-        if(!arquivo.exists()){
-            exibirMensagem(AlertType.WARNING, "Cadastre o gabarito antes de atualizá-lo.");
+        if (!arquivo.exists()) {
+            exibirMensagem(
+                AlertType.WARNING,
+                "Cadastre o gabarito antes de atualizá-lo."
+            );
             return;
         }
 
         String gabarito = obterSequencia(campoGabarito);
-        if(gabarito == null) return;
+        if (gabarito == null) return;
 
-        Alert confirmacao = new Alert(AlertType.CONFIRMATION, "Deseja atualizar o gabarito de " + disciplina.getNome() + "?");
+        Alert confirmacao = new Alert(
+            AlertType.CONFIRMATION,
+            "Deseja atualizar o gabarito de " + disciplina.getNome() + "?"
+        );
 
         confirmacao.setHeaderText("Confirmar atualização");
 
-        if (confirmacao.showAndWait().orElse(ButtonType.CANCEL)!= ButtonType.OK) {
+        if (
+            confirmacao.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK
+        ) {
             return;
         }
 
-        try(BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo))){
-
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo))) {
             bw.write(gabarito);
-        }catch(IOException e){
-            exibirMensagem(AlertType.ERROR,"Falha ao atualizar o gabarito.");
+        } catch (IOException e) {
+            exibirMensagem(AlertType.ERROR, "Falha ao atualizar o gabarito.");
             return;
         }
 
         atualizarResultados();
-        exibirMensagem(AlertType.INFORMATION, "Gabarito atualizado com sucesso.");
+        exibirMensagem(
+            AlertType.INFORMATION,
+            "Gabarito atualizado com sucesso."
+        );
     }
 
-    private void removerGabarito(){
-
+    private void removerGabarito() {
         Disciplina disciplina = disciplinaSelecionada();
-        if(disciplina == null) return;
+        if (disciplina == null) return;
 
         File arquivo = arquivoGabarito(disciplina);
 
-        if(!arquivo.exists()){
-            exibirMensagem(AlertType.WARNING,"Essa disciplina não possui gabarito.");
+        if (!arquivo.exists()) {
+            exibirMensagem(
+                AlertType.WARNING,
+                "Essa disciplina não possui gabarito."
+            );
             return;
         }
 
         Alert confirmacao = new Alert(
-            AlertType.CONFIRMATION,"Deseja remover o gabarito de "+ disciplina.getNome() + "?"
+            AlertType.CONFIRMATION,
+            "Deseja remover o gabarito de " + disciplina.getNome() + "?"
         );
 
         confirmacao.setHeaderText("Confirmar remoção");
 
-        if(confirmacao.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK) {
+        if (
+            confirmacao.showAndWait().orElse(ButtonType.CANCEL) != ButtonType.OK
+        ) {
             return;
         }
 
-        if(arquivo.delete()){
-
+        if (arquivo.delete()) {
             removerResultados(disciplina);
             limparCampos(campoGabarito);
-            exibirMensagem(AlertType.INFORMATION,"Gabarito removido com sucesso.");
-
-        }else{
-            exibirMensagem(AlertType.ERROR,"Não foi possível remover o gabarito.");
+            exibirMensagem(
+                AlertType.INFORMATION,
+                "Gabarito removido com sucesso."
+            );
+        } else {
+            exibirMensagem(
+                AlertType.ERROR,
+                "Não foi possível remover o gabarito."
+            );
         }
     }
 
     private void atualizarResultados() {
-
-        try{
+        try {
             GeradorNota geradorNota = new GeradorNota("dados/resultados");
             geradorNota.gerarResultados(pastaProvas, pastaGabaritos);
-        }catch(IOException e){
-            exibirMensagem(AlertType.ERROR,"Falha ao gerar os resultados.");
+        } catch (IOException e) {
+            exibirMensagem(AlertType.ERROR, "Falha ao gerar os resultados.");
         }
     }
 
     private void removerResultados(Disciplina disciplina) {
-
         String nome = nomeValido(disciplina.getNome());
 
         new File("dados/resultados", nome + "_notas.txt").delete();
@@ -693,8 +762,7 @@ public class TelaDisciplinas {
     }
 
     private void limparCampos(TextField[] campos) {
-
-        for(TextField campo : campos){
+        for (TextField campo : campos) {
             if (campo != null) {
                 campo.clear();
             }
@@ -702,7 +770,6 @@ public class TelaDisciplinas {
     }
 
     private void exibirMensagem(AlertType tipo, String mensagem) {
-
         Alert alerta = new Alert(tipo);
         alerta.setTitle("Gerenciador de Boletins");
         alerta.setHeaderText(null);

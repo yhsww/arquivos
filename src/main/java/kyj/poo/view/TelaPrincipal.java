@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -148,7 +147,7 @@ public class TelaPrincipal {
         HBox painelAcoes = new HBox(18, acaoBoletins, acaoConsultas);
         HBox.setHgrow(acaoBoletins, Priority.ALWAYS);
         HBox.setHgrow(acaoConsultas, Priority.ALWAYS);
-    
+
         Region espacoBase = new Region();
         VBox.setVgrow(espacoBase, Priority.ALWAYS);
 
@@ -159,12 +158,10 @@ public class TelaPrincipal {
             telaBoletins.mostrar(new Stage());
         });
 
-       
         botaoConsultar.setOnAction(e -> {
             TelaResultados telaResultados = new TelaResultados();
             telaResultados.mostrar(new Stage());
         });
-        
 
         conteudo
             .getChildren()
@@ -244,16 +241,15 @@ public class TelaPrincipal {
         });
 
         btnAlunos.setOnAction(e -> {
-                            TelaAlunos telaAlunos = new TelaAlunos();
-                            telaAlunos.mostrar(new Stage());
+            TelaAlunos telaAlunos = new TelaAlunos();
+            telaAlunos.mostrar(new Stage());
         });
 
-
-         btnResultados.setOnAction(e -> {
+        btnResultados.setOnAction(e -> {
             TelaResultados telaResultados = new TelaResultados();
             telaResultados.mostrar(new Stage());
         });
-       
+
         return menu;
     }
 
@@ -306,7 +302,6 @@ public class TelaPrincipal {
     }
 
     private int contarLinhas(String caminho) {
-
         File arquivo = new File(caminho);
 
         if (!arquivo.isFile()) return 0;
@@ -314,11 +309,9 @@ public class TelaPrincipal {
         int total = 0;
 
         try (BufferedReader br = new BufferedReader(new FileReader(arquivo))) {
-
             while (br.readLine() != null) {
                 total++;
             }
-
         } catch (IOException e) {
             return 0;
         }
@@ -327,7 +320,6 @@ public class TelaPrincipal {
     }
 
     private int contarArquivos(String caminho) {
-
         File[] arquivos = new File(caminho).listFiles();
 
         if (arquivos == null) return 0;

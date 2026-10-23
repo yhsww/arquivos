@@ -24,7 +24,9 @@ public class GeradorNota {
     public void gerarResultados(File pastaProvas, File pastaGabaritos)
         throws IOException {
         if (!this.pathResultados.exists() && !this.pathResultados.mkdirs()) {
-            throw new IOException("Não foi possível criar a pasta de resultados.");
+            throw new IOException(
+                "Não foi possível criar a pasta de resultados."
+            );
         }
 
         File[] provas = pastaProvas.listFiles();
@@ -40,10 +42,9 @@ public class GeradorNota {
 
             if (!gabarito.isFile()) continue;
 
-            String nomeDisciplina = prova.getName().substring(
-                0,
-                prova.getName().length() - ".txt".length()
-            );
+            String nomeDisciplina = prova
+                .getName()
+                .substring(0, prova.getName().length() - ".txt".length());
 
             Disciplina disciplina = lerDisciplina(nomeDisciplina, prova);
 
@@ -56,9 +57,7 @@ public class GeradorNota {
         throws IOException {
         Disciplina disciplina = new Disciplina(nome);
 
-        try (
-            BufferedReader br = new BufferedReader(new FileReader(arquivo))
-        ) {
+        try (BufferedReader br = new BufferedReader(new FileReader(arquivo))) {
             String linha;
 
             while ((linha = br.readLine()) != null) {
@@ -78,9 +77,7 @@ public class GeradorNota {
 
     private String lerGabarito(String pathGabarito) throws IOException {
         try (
-            BufferedReader br = new BufferedReader(
-                new FileReader(pathGabarito)
-            )
+            BufferedReader br = new BufferedReader(new FileReader(pathGabarito))
         ) {
             String gabarito = br.readLine();
 
@@ -101,7 +98,10 @@ public class GeradorNota {
         ) {
             throw new IOException("O diretório buscado não foi encontrado.");
         }
-        File arquivo = new File(this.pathResultados, nomeArquivo + "_alfabetico.txt");
+        File arquivo = new File(
+            this.pathResultados,
+            nomeArquivo + "_alfabetico.txt"
+        );
 
         String gabarito = lerGabarito(pathGabarito);
 
@@ -126,7 +126,10 @@ public class GeradorNota {
         ) {
             throw new IOException("O diretório buscado não foi encontrado.");
         }
-        File arquivo = new File(this.pathResultados, nomeArquivo + "_notas.txt");
+        File arquivo = new File(
+            this.pathResultados,
+            nomeArquivo + "_notas.txt"
+        );
 
         String gabarito = lerGabarito(pathGabarito);
 

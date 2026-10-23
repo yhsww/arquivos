@@ -7,7 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
@@ -33,7 +32,6 @@ public class TelaResultados {
     private final Label media = new Label(TEXTO_MEDIA_VAZIA);
 
     public void mostrar(Stage stage) {
-
         Label titulo = new Label("Resultados");
         Label subtitulo = new Label("Consulte os boletins de cada disciplina");
 
@@ -46,18 +44,38 @@ public class TelaResultados {
         disciplinas.setPromptText("Selecione uma disciplina");
         disciplinas.setMaxWidth(Double.MAX_VALUE);
 
-        TableColumn<Resultado, String> colunaAlunos = new TableColumn<>("Alunos");
-        colunaAlunos.setCellValueFactory(dados -> new SimpleStringProperty(dados.getValue().getNomeAluno()));
+        TableColumn<Resultado, String> colunaAlunos = new TableColumn<>(
+            "Alunos"
+        );
+        colunaAlunos.setCellValueFactory(dados ->
+            new SimpleStringProperty(dados.getValue().getNomeAluno())
+        );
 
-        TableColumn<Resultado, Number> colunaAcertos = new TableColumn<>("Acertos");
-        colunaAcertos.setCellValueFactory(dados -> new SimpleIntegerProperty(dados.getValue().getQtdAcertos()));
+        TableColumn<Resultado, Number> colunaAcertos = new TableColumn<>(
+            "Acertos"
+        );
+        colunaAcertos.setCellValueFactory(dados ->
+            new SimpleIntegerProperty(dados.getValue().getQtdAcertos())
+        );
 
         tabelaDisciplina.getColumns().addAll(colunaAlunos, colunaAcertos);
         // Requer JavaFX 20+. Em versões anteriores, use TableView.CONSTRAINED_RESIZE_POLICY
-        tabelaDisciplina.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
-        tabelaDisciplina.setPlaceholder(new Label("Selecione uma disciplina para consultar"));
+        tabelaDisciplina.setColumnResizePolicy(
+            TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS
+        );
+        tabelaDisciplina.setPlaceholder(
+            new Label("Selecione uma disciplina para consultar")
+        );
 
-        VBox conteudo = new VBox(14, titulo, subtitulo, tituloDisciplina, disciplinas, tabelaDisciplina, media);
+        VBox conteudo = new VBox(
+            14,
+            titulo,
+            subtitulo,
+            tituloDisciplina,
+            disciplinas,
+            tabelaDisciplina,
+            media
+        );
         conteudo.setPadding(new Insets(30));
         conteudo.getStyleClass().add("tela");
 
@@ -85,7 +103,6 @@ public class TelaResultados {
     }
 
     private void carregarResultadoSelecionado() {
-
         String nomeDisciplina = disciplinas.getValue();
 
         if (nomeDisciplina == null) {
@@ -93,11 +110,17 @@ public class TelaResultados {
             return;
         }
 
-        File arquivo = new File(pathResultados, nomeDisciplina + SUFIXO_ARQUIVO);
+        File arquivo = new File(
+            pathResultados,
+            nomeDisciplina + SUFIXO_ARQUIVO
+        );
 
         if (!arquivo.isFile()) {
             limparResultados();
-            exibirMensagem(AlertType.WARNING, "Arquivo de resultados não encontrado.");
+            exibirMensagem(
+                AlertType.WARNING,
+                "Arquivo de resultados não encontrado."
+            );
             return;
         }
 
@@ -105,12 +128,15 @@ public class TelaResultados {
         String textoMedia = "Média: não disponível";
         int linhasInvalidas = 0;
 
-        try (BufferedReader br = Files.newBufferedReader(arquivo.toPath(), StandardCharsets.UTF_8)) {
-
+        try (
+            BufferedReader br = Files.newBufferedReader(
+                arquivo.toPath(),
+                StandardCharsets.UTF_8
+            )
+        ) {
             String linha;
 
             while ((linha = br.readLine()) != null) {
-
                 linha = linha.trim();
 
                 if (linha.isEmpty()) {
@@ -143,18 +169,22 @@ public class TelaResultados {
             media.setText(textoMedia);
 
             if (linhasInvalidas > 0) {
-                exibirMensagem(AlertType.WARNING,
-                        linhasInvalidas + " linha(s) inválida(s) foram ignoradas no arquivo.");
+                exibirMensagem(
+                    AlertType.WARNING,
+                    linhasInvalidas +
+                        " linha(s) inválida(s) foram ignoradas no arquivo."
+                );
             }
-
         } catch (IOException e) {
             limparResultados();
-            exibirMensagem(AlertType.ERROR, "Falha ao carregar os resultados da disciplina.");
+            exibirMensagem(
+                AlertType.ERROR,
+                "Falha ao carregar os resultados da disciplina."
+            );
         }
     }
 
     private void carregarDisciplinas() {
-
         disciplinas.getItems().clear();
 
         if (!pathResultados.exists() || !pathResultados.isDirectory()) {
@@ -164,16 +194,21 @@ public class TelaResultados {
         File[] arquivos = pathResultados.listFiles();
 
         if (arquivos == null) {
-            exibirMensagem(AlertType.ERROR, "Não foi possível acessar os arquivos de resultados.");
+            exibirMensagem(
+                AlertType.ERROR,
+                "Não foi possível acessar os arquivos de resultados."
+            );
             return;
         }
 
         for (File arquivo : arquivos) {
-
             String nomeArquivo = arquivo.getName();
 
             if (arquivo.isFile() && nomeArquivo.endsWith(SUFIXO_ARQUIVO)) {
-                String nomeDisciplina = nomeArquivo.substring(0, nomeArquivo.length() - SUFIXO_ARQUIVO.length());
+                String nomeDisciplina = nomeArquivo.substring(
+                    0,
+                    nomeArquivo.length() - SUFIXO_ARQUIVO.length()
+                );
                 disciplinas.getItems().add(nomeDisciplina);
             }
         }
@@ -182,7 +217,6 @@ public class TelaResultados {
     }
 
     private void exibirMensagem(AlertType tipo, String mensagem) {
-
         Alert alerta = new Alert(tipo);
         alerta.setTitle("Gerenciador de Boletins");
         alerta.setHeaderText(null);
