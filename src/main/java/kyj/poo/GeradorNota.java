@@ -21,6 +21,77 @@ public class GeradorNota {
         this.pathResultados = new File(pathResultados);
     }
 
+    public void gerarResultados(File pastaProvas, File pastaGabaritos)
+        throws IOException {
+        if (!this.pathResultados.exists() && !this.pathResultados.mkdirs()) {
+            throw new IOException("Não foi possível criar a pasta de resultados.");
+        }
+
+        File[] provas = pastaProvas.listFiles();
+
+        if (provas == null) {
+            return;
+        }
+
+        for (File prova : provas) {
+            if (!prova.isFile() || !prova.getName().endsWith(".txt")) continue;
+
+            File gabarito = new File(pastaGabaritos, prova.getName());
+
+            if (!gabarito.isFile()) continue;
+
+            String nomeDisciplina = prova.getName().substring(
+                0,
+                prova.getName().length() - ".txt".length()
+            );
+
+            Disciplina disciplina = lerDisciplina(nomeDisciplina, prova);
+
+            notasAlfabeticas(disciplina, gabarito.getPath());
+            notasPorNota(disciplina, gabarito.getPath());
+        }
+    }
+
+    private Disciplina lerDisciplina(String nome, File arquivo)
+        throws IOException {
+        Disciplina disciplina = new Disciplina(nome);
+
+        try (
+            BufferedReader br = new BufferedReader(new FileReader(arquivo))
+        ) {
+            String linha;
+
+            while ((linha = br.readLine()) != null) {
+                String[] partes = linha.split("\\t", 2);
+
+                if (partes.length != 2) continue;
+
+                String respostas = partes[0].trim().toUpperCase();
+                String nomeAluno = partes[1].trim();
+
+                disciplina.getAlunos().add(new Aluno(nomeAluno, respostas));
+            }
+        }
+
+        return disciplina;
+    }
+
+    private String lerGabarito(String pathGabarito) throws IOException {
+        try (
+            BufferedReader br = new BufferedReader(
+                new FileReader(pathGabarito)
+            )
+        ) {
+            String gabarito = br.readLine();
+
+            if (gabarito == null || !gabarito.strip().matches("[VF]{10}")) {
+                throw new IOException("Gabarito inválido.");
+            }
+
+            return gabarito.strip();
+        }
+    }
+
     public void notasAlfabeticas(Disciplina disciplina, String pathGabarito)
         throws IOException {
         String nomeArquivo = disciplina.getNome();
@@ -32,12 +103,7 @@ public class GeradorNota {
         }
         File arquivo = new File(this.pathResultados, nomeArquivo + "_alfabetico.txt");
 
-        String gabarito;
-        try (
-            BufferedReader br = new BufferedReader(new FileReader(pathGabarito))
-        ) {
-            gabarito = br.readLine().strip();
-        }
+        String gabarito = lerGabarito(pathGabarito);
 
         List<Aluno> alunos = new ArrayList<>(disciplina.getAlunos());
         alunos.sort(Comparator.comparing(Aluno::getNome));
@@ -62,12 +128,7 @@ public class GeradorNota {
         }
         File arquivo = new File(this.pathResultados, nomeArquivo + "_notas.txt");
 
-        String gabarito;
-        try (
-            BufferedReader br = new BufferedReader(new FileReader(pathGabarito))
-        ) {
-            gabarito = br.readLine().strip();
-        }
+        String gabarito = lerGabarito(pathGabarito);
 
         List<Nota> notas = new ArrayList<>();
         for (Aluno aluno : disciplina.getAlunos()) {

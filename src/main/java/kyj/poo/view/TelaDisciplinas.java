@@ -19,11 +19,13 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import kyj.poo.GeradorNota;
 import kyj.poo.models.Aluno;
 import kyj.poo.models.Disciplina;
 
@@ -81,6 +83,10 @@ public class TelaDisciplinas {
 
         VBox conteudo = new VBox(10);
         conteudo.setPadding(new Insets(15));
+        conteudo.getStyleClass().add("tela");
+
+        this.lista.setMinHeight(120);
+        this.lista.setPrefHeight(180);
 
         conteudo.getChildren().addAll(
             new Label("Cadastro de disciplinas"),
@@ -106,7 +112,12 @@ public class TelaDisciplinas {
             btnRemoverGabarito
         );
 
-        Scene scene = new Scene(conteudo, 550, 900);
+        ScrollPane rolagem = new ScrollPane(conteudo);
+        rolagem.setFitToWidth(true);
+        rolagem.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        rolagem.getStyleClass().add("rolagem");
+
+        Scene scene = new Scene(rolagem, 550, 900);
 
         var css = getClass().getResource("/estilo.css");
 
@@ -190,7 +201,7 @@ public class TelaDisciplinas {
 
         this.campoNome.clear();
 
-        exibirMensagem(AlertType.CONFIRMATION,"Disciplina cadastrada com sucesso.");
+        exibirMensagem(AlertType.INFORMATION,"Disciplina cadastrada com sucesso.");
     }
 
     private void removerDisciplina() {
@@ -220,7 +231,7 @@ public class TelaDisciplinas {
         limparCampos(campoGabarito);
         limparCampos(campoRespostas);
 
-        exibirMensagem(AlertType.CONFIRMATION,"Disciplina removida do cadastro.");
+        exibirMensagem(AlertType.INFORMATION,"Disciplina removida do cadastro.");
     }
 
     private void carregarDisciplinas() {
@@ -475,6 +486,8 @@ public class TelaDisciplinas {
 
             exibirMensagem(AlertType.INFORMATION, atualizado ? "Respostas atualizadas com sucesso." : "Respostas registradas com sucesso.");
 
+            atualizarResultados();
+
         }catch(IOException e){
             exibirMensagem(AlertType.ERROR,"Falha ao salvar as respostas da prova.");
         }
@@ -555,11 +568,13 @@ public class TelaDisciplinas {
         try(BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo))){
 
             bw.write(gabarito);
-            exibirMensagem(AlertType.CONFIRMATION, "Gabarito cadastrado com sucesso.");
-
         }catch (IOException e){
             exibirMensagem(AlertType.ERROR,"Falha ao salvar o gabarito.");
+            return;
         }
+
+        atualizarResultados();
+        exibirMensagem(AlertType.INFORMATION, "Gabarito cadastrado com sucesso.");
     }
 
     private void carregarGabarito(Disciplina disciplina) {
@@ -617,11 +632,13 @@ public class TelaDisciplinas {
         try(BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo))){
 
             bw.write(gabarito);
-            exibirMensagem(AlertType.CONFIRMATION, "Gabarito atualizado com sucesso.");
-
         }catch(IOException e){
             exibirMensagem(AlertType.ERROR,"Falha ao atualizar o gabarito.");
+            return;
         }
+
+        atualizarResultados();
+        exibirMensagem(AlertType.INFORMATION, "Gabarito atualizado com sucesso.");
     }
 
     private void removerGabarito(){
@@ -648,12 +665,31 @@ public class TelaDisciplinas {
 
         if(arquivo.delete()){
 
+            removerResultados(disciplina);
             limparCampos(campoGabarito);
             exibirMensagem(AlertType.INFORMATION,"Gabarito removido com sucesso.");
 
         }else{
             exibirMensagem(AlertType.ERROR,"Não foi possível remover o gabarito.");
         }
+    }
+
+    private void atualizarResultados() {
+
+        try{
+            GeradorNota geradorNota = new GeradorNota("dados/resultados");
+            geradorNota.gerarResultados(pastaProvas, pastaGabaritos);
+        }catch(IOException e){
+            exibirMensagem(AlertType.ERROR,"Falha ao gerar os resultados.");
+        }
+    }
+
+    private void removerResultados(Disciplina disciplina) {
+
+        String nome = nomeValido(disciplina.getNome());
+
+        new File("dados/resultados", nome + "_notas.txt").delete();
+        new File("dados/resultados", nome + "_alfabetico.txt").delete();
     }
 
     private void limparCampos(TextField[] campos) {

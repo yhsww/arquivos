@@ -17,6 +17,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import kyj.poo.GeradorBoletim;
+import kyj.poo.GeradorNota;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
@@ -123,6 +124,8 @@ public class TelaBoletins{
         stage.setTitle("KYJ");
         stage.setScene(scene);
         stage.show();
+
+        carregarBoletins();
     }
 
     public void visualizarBoletim(String nomeAluno){
@@ -175,12 +178,15 @@ public class TelaBoletins{
         
         try{
 
+            GeradorNota geradorNota = new GeradorNota("dados/resultados");
+            geradorNota.gerarResultados(new File("dados/provas"), new File("dados/gabaritos"));
+
             GeradorBoletim geradorBoletim = new GeradorBoletim("dados/resultados", "dados/boletins");
 
             geradorBoletim.gerarBoletins();
             carregarBoletins();
 
-            exibirMensagem(AlertType.CONFIRMATION, "Boletins gerados com sucesso.");
+            exibirMensagem(AlertType.INFORMATION, "Boletins gerados com sucesso.");
 
         }catch(IOException e){
 
@@ -212,9 +218,8 @@ public class TelaBoletins{
 
             if(!arquivo.isFile() || !arquivo.getName().endsWith(".txt")) continue;
             
-            try{
+            try(BufferedReader br = new BufferedReader(new FileReader(arquivo))){
 
-                BufferedReader br = new BufferedReader(new FileReader(arquivo));
                 String linha;
 
                 while( (linha = br.readLine()) != null){
@@ -227,17 +232,15 @@ public class TelaBoletins{
             }catch(IOException e){
                 exibirMensagem(AlertType.ERROR, "Falha ao ler " + arquivo.getName());
             }
-
-            Collections.sort(nomes, String.CASE_INSENSITIVE_ORDER);
-            listaAlunos.getItems().setAll(nomes);
-
         }
-        
+
+        Collections.sort(nomes, String.CASE_INSENSITIVE_ORDER);
+        listaAlunos.getItems().setAll(nomes);
     }
 
     private void exibirMensagem(AlertType tipo, String mensagem) {
 
-        Alert alerta = new Alert(AlertType.ERROR);
+        Alert alerta = new Alert(tipo);
         alerta.setTitle("Gerenciador de Boletins");
         alerta.setHeaderText(null);
         alerta.setContentText(mensagem);

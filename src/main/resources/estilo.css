@@ -10,6 +10,11 @@
     -fx-background-color: #fdfffd;
 }
 
+.rolagem,
+.rolagem > .viewport {
+    -fx-background-color: #fdfffd;
+}
+
 .rodape-tela {
     -fx-text-fill: #98a39d;
     -fx-font-size: 10px;

@@ -1,10 +1,13 @@
 package kyj.poo.view;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -74,19 +77,19 @@ public class TelaPrincipal {
         VBox cardAlunos = criarCard(
             "black-person.png",
             "Alunos cadastrados",
-            0,
+            contarLinhas("dados/alunos.txt"),
             "Total de alunos"
         );
         VBox cardDisciplinas = criarCard(
             "black-desk.png",
             "Disciplinas cadastradas",
-            0,
+            contarLinhas("dados/disciplinas.txt"),
             "Total de disciplinas"
         );
         VBox cardBoletins = criarCard(
             "black-folder.png",
             "Boletins registrados",
-            0,
+            contarArquivos("dados/boletins"),
             "Total de boletins"
         );
 
@@ -197,7 +200,6 @@ public class TelaPrincipal {
         Label rotuloMenu = new Label("Menu principal");
         rotuloMenu.getStyleClass().add("menu-secao");
 
-        Button btnInicio = criarBotaoMenu("white-house.png", "Início", false);
         Button btnAlunos = criarBotaoMenu("white-person.png", "Alunos", false);
 
         Button btnDisciplinas = criarBotaoMenu(
@@ -229,15 +231,12 @@ public class TelaPrincipal {
         menu.getChildren().addAll(
             cabecalho,
             rotuloMenu,
-            btnInicio,
             btnAlunos,
             btnDisciplinas,
             btnResultados,
             espaco,
             rodape
         );
-
-        btnInicio.setOnAction(e -> exibirMensagem("Página Inicial"));
 
         btnDisciplinas.setOnAction(e -> {
             TelaDisciplinas telaDisciplinas = new TelaDisciplinas();
@@ -306,11 +305,41 @@ public class TelaPrincipal {
         return card;
     }
 
-    private void exibirMensagem(String mensagem) {
-        Alert msg = new Alert(AlertType.INFORMATION);
-        msg.setTitle("Gerenciador de Boletins");
-        msg.setHeaderText(null);
-        msg.setContentText(mensagem);
-        msg.show();
+    private int contarLinhas(String caminho) {
+
+        File arquivo = new File(caminho);
+
+        if (!arquivo.isFile()) return 0;
+
+        int total = 0;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(arquivo))) {
+
+            while (br.readLine() != null) {
+                total++;
+            }
+
+        } catch (IOException e) {
+            return 0;
+        }
+
+        return total;
+    }
+
+    private int contarArquivos(String caminho) {
+
+        File[] arquivos = new File(caminho).listFiles();
+
+        if (arquivos == null) return 0;
+
+        int total = 0;
+
+        for (File arquivo : arquivos) {
+            if (arquivo.isFile() && arquivo.getName().endsWith(".txt")) {
+                total++;
+            }
+        }
+
+        return total;
     }
 }

@@ -39,44 +39,44 @@ public class GeradorBoletim {
 
         File arquivo = new File(this.pathBoletins, nomeArquivo + ".txt");
 
-        BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo));
+        try (
+            BufferedWriter bw = new BufferedWriter(new FileWriter(arquivo))
+        ) {
+            bw.write("=".repeat(40));
+            bw.newLine();
+            bw.write("Boletim Geral do Aluno");
+            bw.newLine();
+            bw.write("=".repeat(40));
+            bw.newLine();
+            bw.write("Aluno: " + nomeAluno);
+            bw.newLine();
 
-        bw.write("=".repeat(40) + "\n");
-        bw.newLine();
-        bw.write("Boletim Geral do Aluno\n");
-        bw.newLine();
-        bw.write("=".repeat(40) + "\n");
-        bw.newLine();
-        bw.write("Aluno: " + nomeAluno + "\n");
-        bw.newLine();
-        for (Nota nota : boletim.getNotas()) {
-            String disciplina_texto =
-                "Disciplina: " + nota.getDisciplina().getNome();
-            String nota_texto = String.format(
-                "Nota: %d\n",
-                nota.getQtdAcertos()
-            );
+            for (Nota nota : boletim.getNotas()) {
+                String disciplinaTexto =
+                    "Disciplina: " + nota.getDisciplina().getNome();
+
+                bw.write(
+                    String.format(
+                        "%-32s Nota: %d",
+                        disciplinaTexto,
+                        nota.getQtdAcertos()
+                    )
+                );
+                bw.newLine();
+            }
+
+            bw.newLine();
             bw.write(
-                disciplina_texto +
-                    " ".repeat(
-                        40 - disciplina_texto.length() - nota_texto.length()
-                    ) +
-                    nota_texto
+                String.format("Média geral: %.1f", boletim.calcularMedia())
             );
             bw.newLine();
+            bw.write(
+                "Situação final: " +
+                    (boletim.isAprovado() ? "APROVADO(A)" : "REPROVADO(A)")
+            );
+            bw.newLine();
+            bw.write("=".repeat(40));
         }
-
-        bw.write(String.format("Média geral: %.1f\n", boletim.calcularMedia()));
-        bw.newLine();
-
-        bw.write(
-            "Situação final: " +
-                (boletim.isAprovado() ? "APROVADO(A)" : "REPROVADO(A)") +
-                "\n"
-        );
-        bw.newLine();
-        bw.write("=".repeat(40));
-        bw.close();
     }
 
     public void gerarBoletins() throws IOException {
@@ -87,6 +87,7 @@ public class GeradorBoletim {
         }
 
         this.pathBoletins.mkdirs();
+        limparBoletins();
 
         File[] arquivos = pathResultados.listFiles();
 
@@ -110,38 +111,56 @@ public class GeradorBoletim {
 
             Disciplina disciplina = new Disciplina(nomeDisciplina);
 
-            BufferedReader br = new BufferedReader(new FileReader(arquivo));
+            try (
+                BufferedReader br = new BufferedReader(new FileReader(arquivo))
+            ) {
+                String linha;
 
-            String linha;
+                while ((linha = br.readLine()) != null) {
+                    if (linha.trim().isEmpty()) continue;
 
-            while ((linha = br.readLine()) != null) {
-                if (linha.trim().isEmpty()) continue;
+                    String[] dadosLinha = linha.split("\\t", 2);
 
-                String[] dadosLinha = linha.split("\\t", 2);
+                    if (dadosLinha.length != 2) continue;
 
-                if (dadosLinha.length != 2) continue;
+                    String nomeAluno = dadosLinha[0].trim();
+                    int acertos;
 
-                String nomeAluno = dadosLinha[0].trim();
-                int acertos = Integer.parseInt(dadosLinha[1].trim());
+                    try {
+                        acertos = Integer.parseInt(dadosLinha[1].trim());
+                    } catch (NumberFormatException e) {
+                        continue;
+                    }
 
-                Boletim boletim = buscarBoletim(boletins, nomeAluno);
+                    Boletim boletim = buscarBoletim(boletins, nomeAluno);
 
-                if (boletim == null) {
-                    Aluno aluno = new Aluno(nomeAluno, "");
-                    boletim = new Boletim(aluno);
-                    boletins.add(boletim);
+                    if (boletim == null) {
+                        Aluno aluno = new Aluno(nomeAluno, "");
+                        boletim = new Boletim(aluno);
+                        boletins.add(boletim);
+                    }
+
+                    Nota nota = new Nota(boletim.getAluno(), disciplina, acertos);
+
+                    boletim.addNotas(nota);
                 }
-
-                Nota nota = new Nota(boletim.getAluno(), disciplina, acertos);
-
-                boletim.addNotas(nota);
             }
-
-            br.close();
         }
 
         for (Boletim boletim : boletins) {
             salvarBoletim(boletim);
+        }
+    }
+
+    private void limparBoletins() {
+        File[] arquivos = this.pathBoletins.listFiles();
+
+        if (arquivos == null) return;
+
+        for (File arquivo : arquivos) {
+            if (arquivo.isFile() && arquivo.getName().endsWith(".txt")) {
+                arquivo.delete();
+            }
         }
     }
 }
