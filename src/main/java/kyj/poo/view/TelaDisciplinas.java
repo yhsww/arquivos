@@ -128,7 +128,27 @@ public class TelaDisciplinas {
         stage.setScene(scene);
 
         carregarDisciplinas();
-        carregarAlunos();
+        carregarAlunos(true);
+
+        stage.focusedProperty().addListener((obs, antes, agora) -> {
+            if (!agora) return;
+
+            Aluno atual = comboAlunos.getValue();
+            String nomeAtual = atual == null ? null : atual.getNome();
+
+            carregarAlunos(false);
+
+            if (nomeAtual != null) {
+                for (Aluno a : comboAlunos.getItems()) {
+                    if (a.getNome().equalsIgnoreCase(nomeAtual)) {
+                        comboAlunos.setValue(a);
+                        break;
+                    }
+                }
+            }
+        });
+
+        stage.show();
 
         stage.show();
     }
@@ -323,11 +343,13 @@ public class TelaDisciplinas {
             .sort((d1, d2) -> d1.getNome().compareToIgnoreCase(d2.getNome()));
     }
 
-    private void carregarAlunos() {
+    private void carregarAlunos(boolean avisar) {
         this.comboAlunos.getItems().clear();
 
         if (!arquivoAlunos.exists()) {
-            exibirMensagem(AlertType.WARNING, "Cadastre alunos primeiro.");
+            if (avisar) {
+                exibirMensagem(AlertType.WARNING, "Cadastre alunos primeiro.");
+            }
             return;
         }
 
