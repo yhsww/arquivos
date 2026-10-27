@@ -59,7 +59,6 @@ public class TelaResultados {
         );
 
         tabelaDisciplina.getColumns().addAll(colunaAlunos, colunaAcertos);
-        // Requer JavaFX 20+. Em versões anteriores, use TableView.CONSTRAINED_RESIZE_POLICY
         tabelaDisciplina.setColumnResizePolicy(
             TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS
         );
