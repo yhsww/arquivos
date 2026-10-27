@@ -93,6 +93,22 @@ public class TelaResultados {
 
         stage.setTitle("KYJ");
         stage.setScene(scene);
+        stage.setTitle("KYJ");
+        stage.setScene(scene);
+
+        stage.focusedProperty().addListener((obs, antes, agora) -> {
+            if (!agora) return;
+
+            String atual = disciplinas.getValue();
+            carregarDisciplinas();
+
+            if (atual != null && disciplinas.getItems().contains(atual)) {
+                disciplinas.setValue(atual);
+            }
+        });
+
+        stage.show();
+
         stage.show();
     }
 

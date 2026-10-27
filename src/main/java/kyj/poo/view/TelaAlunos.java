@@ -18,7 +18,10 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import kyj.poo.GeradorNota;
 import kyj.poo.models.Aluno;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TelaAlunos {
 
@@ -149,6 +152,8 @@ public class TelaAlunos {
             return;
         }
 
+        removerDadosDoAluno(selecionado.getNome());
+
         exibirMensagem(AlertType.CONFIRMATION, "Aluno removido do cadastro.");
     }
 
@@ -221,6 +226,81 @@ public class TelaAlunos {
         this.lista
             .getItems()
             .sort((a1, a2) -> a1.getNome().compareToIgnoreCase(a2.getNome()));
+    }
+
+    private void removerDadosDoAluno(String nome) {
+       //tira as respostas do aluno das provas
+        File[] provas = new File("dados/provas").listFiles();
+
+        if (provas != null) {
+            for (File prova : provas) {
+                if (!prova.isFile() || !prova.getName().endsWith(".txt")) continue;
+
+                List<String> mantidas = new ArrayList<>();
+                boolean mudou = false;
+
+                try (BufferedReader br = new BufferedReader(new FileReader(prova))) {
+                    String linha;
+
+                    while ((linha = br.readLine()) != null) {
+                        String[] partes = linha.split("\t", 2);
+
+                        if (partes.length == 2 && partes[1].trim().equalsIgnoreCase(nome)) {
+                            mudou = true;
+                        } else {
+                            mantidas.add(linha);
+                        }
+                    }
+                } catch (IOException e) {
+                    continue;
+                }
+
+                if (mudou) {
+                    try (BufferedWriter bw = new BufferedWriter(new FileWriter(prova))) {
+                        for (String l : mantidas) {
+                            bw.write(l);
+                            bw.newLine();
+                        }
+                    } catch (IOException e) {
+                        exibirMensagem(AlertType.ERROR, "Falha ao atualizar " + prova.getName());
+                    }
+                }
+            }
+        }
+
+        //apaga o boletim
+        File[] boletins = new File("dados/boletins").listFiles();
+
+        if (boletins != null) {
+            for (File boletim : boletins) {
+                if (!boletim.isFile() || !boletim.getName().endsWith(".txt")) continue;
+
+                boolean doAluno = false;
+
+                try (BufferedReader br = new BufferedReader(new FileReader(boletim))) {
+                    String linha;
+
+                    while ((linha = br.readLine()) != null) {
+                        if (linha.trim().equalsIgnoreCase("Aluno: " + nome)) {
+                            doAluno = true;
+                            break;
+                        }
+                    }
+                } catch (IOException e) {
+                    continue;
+                }
+
+                if (doAluno) boletim.delete();
+            }
+        }
+
+        //refac os resultados sem o aluno
+        try {
+            new GeradorNota("dados/resultados")
+                    .gerarResultados(new File("dados/provas"), new File("dados/gabaritos"));
+        } catch (IOException e) {
+            exibirMensagem(AlertType.ERROR, "Falha ao atualizar os resultados.");
+        }
     }
 
     private void exibirMensagem(AlertType tipo, String mensagem) {
