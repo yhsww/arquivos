@@ -20,6 +20,7 @@ import javafx.stage.Stage;
 import kyj.poo.Imagens;
 
 public class TelaPrincipal {
+
     private Label valorAlunos;
     private Label valorDisciplinas;
     private Label valorBoletins;
@@ -55,7 +56,9 @@ public class TelaPrincipal {
 
     private void atualizarContadores() {
         valorAlunos.setText(String.valueOf(contarLinhas("dados/alunos.txt")));
-        valorDisciplinas.setText(String.valueOf(contarLinhas("dados/disciplinas.txt")));
+        valorDisciplinas.setText(
+            String.valueOf(contarLinhas("dados/disciplinas.txt"))
+        );
         valorBoletins.setText(String.valueOf(contarArquivos("dados/boletins")));
     }
 
@@ -88,27 +91,33 @@ public class TelaPrincipal {
         VBox cabecalho = new VBox(8, titulo, subtitulo);
         HBox cards = new HBox(16);
 
-        valorAlunos = new Label(String.valueOf(contarLinhas("dados/alunos.txt")));
-        valorDisciplinas = new Label(String.valueOf(contarLinhas("dados/disciplinas.txt")));
-        valorBoletins = new Label(String.valueOf(contarArquivos("dados/boletins")));
+        valorAlunos = new Label(
+            String.valueOf(contarLinhas("dados/alunos.txt"))
+        );
+        valorDisciplinas = new Label(
+            String.valueOf(contarLinhas("dados/disciplinas.txt"))
+        );
+        valorBoletins = new Label(
+            String.valueOf(contarArquivos("dados/boletins"))
+        );
 
         VBox cardAlunos = criarCard(
-                "black-person.png",
-                "Alunos cadastrados",
-                valorAlunos,
-                "Total de alunos"
+            "black-person.png",
+            "Alunos cadastrados",
+            valorAlunos,
+            "Total de alunos"
         );
         VBox cardDisciplinas = criarCard(
-                "black-desk.png",
-                "Disciplinas cadastradas",
-                valorDisciplinas,
-                "Total de disciplinas"
+            "black-desk.png",
+            "Disciplinas cadastradas",
+            valorDisciplinas,
+            "Total de disciplinas"
         );
         VBox cardBoletins = criarCard(
-                "black-folder.png",
-                "Boletins registrados",
-                valorBoletins,
-                "Total de boletins"
+            "black-folder.png",
+            "Boletins registrados",
+            valorBoletins,
+            "Total de boletins"
         );
 
         cards.getChildren().addAll(cardAlunos, cardDisciplinas, cardBoletins);
@@ -299,7 +308,12 @@ public class TelaPrincipal {
         return botao;
     }
 
-    private VBox criarCard(String icon, String titulo, Label cValor, String desc) {
+    private VBox criarCard(
+        String icon,
+        String titulo,
+        Label cValor,
+        String desc
+    ) {
         ImageView cIcon = criarImagem(icon, 40, 40);
         cIcon.getStyleClass().add("card-icon");
 

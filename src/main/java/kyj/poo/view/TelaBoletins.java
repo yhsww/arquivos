@@ -125,10 +125,15 @@ public class TelaBoletins {
         stage.focusedProperty().addListener((obs, antes, agora) -> {
             if (!agora) return;
 
-            String selecionado = listaAlunos.getSelectionModel().getSelectedItem();
+            String selecionado = listaAlunos
+                .getSelectionModel()
+                .getSelectedItem();
             carregarBoletins();
 
-            if (selecionado != null && listaAlunos.getItems().contains(selecionado)) {
+            if (
+                selecionado != null &&
+                listaAlunos.getItems().contains(selecionado)
+            ) {
                 listaAlunos.getSelectionModel().select(selecionado);
             }
         });

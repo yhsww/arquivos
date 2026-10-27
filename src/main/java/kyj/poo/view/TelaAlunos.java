@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -20,8 +22,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import kyj.poo.GeradorNota;
 import kyj.poo.models.Aluno;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TelaAlunos {
 
@@ -229,23 +229,32 @@ public class TelaAlunos {
     }
 
     private void removerDadosDoAluno(String nome) {
-       //tira as respostas do aluno das provas
+        //tira as respostas do aluno das provas
         File[] provas = new File("dados/provas").listFiles();
 
         if (provas != null) {
             for (File prova : provas) {
-                if (!prova.isFile() || !prova.getName().endsWith(".txt")) continue;
+                if (
+                    !prova.isFile() || !prova.getName().endsWith(".txt")
+                ) continue;
 
                 List<String> mantidas = new ArrayList<>();
                 boolean mudou = false;
 
-                try (BufferedReader br = new BufferedReader(new FileReader(prova))) {
+                try (
+                    BufferedReader br = new BufferedReader(
+                        new FileReader(prova)
+                    )
+                ) {
                     String linha;
 
                     while ((linha = br.readLine()) != null) {
                         String[] partes = linha.split("\t", 2);
 
-                        if (partes.length == 2 && partes[1].trim().equalsIgnoreCase(nome)) {
+                        if (
+                            partes.length == 2 &&
+                            partes[1].trim().equalsIgnoreCase(nome)
+                        ) {
                             mudou = true;
                         } else {
                             mantidas.add(linha);
@@ -256,13 +265,20 @@ public class TelaAlunos {
                 }
 
                 if (mudou) {
-                    try (BufferedWriter bw = new BufferedWriter(new FileWriter(prova))) {
+                    try (
+                        BufferedWriter bw = new BufferedWriter(
+                            new FileWriter(prova)
+                        )
+                    ) {
                         for (String l : mantidas) {
                             bw.write(l);
                             bw.newLine();
                         }
                     } catch (IOException e) {
-                        exibirMensagem(AlertType.ERROR, "Falha ao atualizar " + prova.getName());
+                        exibirMensagem(
+                            AlertType.ERROR,
+                            "Falha ao atualizar " + prova.getName()
+                        );
                     }
                 }
             }
@@ -273,11 +289,17 @@ public class TelaAlunos {
 
         if (boletins != null) {
             for (File boletim : boletins) {
-                if (!boletim.isFile() || !boletim.getName().endsWith(".txt")) continue;
+                if (
+                    !boletim.isFile() || !boletim.getName().endsWith(".txt")
+                ) continue;
 
                 boolean doAluno = false;
 
-                try (BufferedReader br = new BufferedReader(new FileReader(boletim))) {
+                try (
+                    BufferedReader br = new BufferedReader(
+                        new FileReader(boletim)
+                    )
+                ) {
                     String linha;
 
                     while ((linha = br.readLine()) != null) {
@@ -296,10 +318,15 @@ public class TelaAlunos {
 
         //refac os resultados sem o aluno
         try {
-            new GeradorNota("dados/resultados")
-                    .gerarResultados(new File("dados/provas"), new File("dados/gabaritos"));
+            new GeradorNota("dados/resultados").gerarResultados(
+                new File("dados/provas"),
+                new File("dados/gabaritos")
+            );
         } catch (IOException e) {
-            exibirMensagem(AlertType.ERROR, "Falha ao atualizar os resultados.");
+            exibirMensagem(
+                AlertType.ERROR,
+                "Falha ao atualizar os resultados."
+            );
         }
     }
 
